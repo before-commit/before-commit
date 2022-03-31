@@ -108,7 +108,10 @@ def install_environment(
 
 def get_docker_user() -> tuple[str, ...]:  # pragma: win32 no cover
     try:
-        return ('-u', f'{os.getuid()}:{os.getgid()}')
+        return (
+            '-u',
+            f'{os.getuid()}:{os.getgid()}',  # type: ignore[attr-defined]
+        )
     except AttributeError:
         return ()
 

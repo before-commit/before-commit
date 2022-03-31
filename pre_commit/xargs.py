@@ -31,8 +31,11 @@ def _environ_size(_env: MutableMapping[str, str] | None = None) -> int:
 
 
 def _get_platform_max_length() -> int:  # pragma: no cover (platform specific)
+    # FIXME: os.name should be a valid reachability condition. Remove `type`
+    # ignore afterwards.
     if os.name == 'posix':
-        maximum = os.sysconf('SC_ARG_MAX') - 2048 - _environ_size()
+        maximum = os.sysconf('SC_ARG_MAX')  # type: ignore[attr-defined]
+        maximum = maximum - 2048 - _environ_size()
         maximum = max(min(maximum, 2 ** 17), 2 ** 12)
         return maximum
     elif os.name == 'nt':
@@ -144,9 +147,10 @@ def xargs(
         # this is implementation details but the command gets translated into
         # full/path/to/cmd.exe /c *cmd
         cmd_exe = parse_shebang.find_executable('cmd.exe')
+        cmd_exe_len = len(cmd_exe) if cmd_exe else 0
         # 1024 is additionally subtracted to give headroom for further
         # expansion inside the batch file
-        _max_length = 8192 - len(cmd_exe) - len(' /c ') - 1024
+        _max_length = 8192 - cmd_exe_len - len(' /c ') - 1024
 
     partitions = partition(cmd, varargs, target_concurrency, _max_length)
 
