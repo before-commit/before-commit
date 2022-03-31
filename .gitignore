@@ -3,4 +3,5 @@
 /.coverage
 /.tox
 /dist
+/build
 .vscode/
