@@ -43,3 +43,7 @@ repos:
     -   id: mypy
         additional_dependencies: [types-all]
         exclude: ^testing/resources/
+-   repo: https://github.com/sirosen/check-jsonschema
+    rev: 0.14.1
+    hooks:
+    -   id: check-github-workflows
