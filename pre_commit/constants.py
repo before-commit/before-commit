@@ -15,7 +15,7 @@ INSTALLED_STATE_VERSION = '1'
 # Bump when modifying `empty_template`
 LOCAL_REPO_VERSION = '1'
 
-VERSION = importlib_metadata.version('pre_commit')
+VERSION = importlib_metadata.version('pre_commit_fork')
 
 # `manual` is not invoked by any installed git hook.  See #719
 STAGES = (
