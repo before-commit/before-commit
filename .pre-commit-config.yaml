@@ -42,6 +42,11 @@ repos:
     hooks:
     -   id: mypy
         additional_dependencies: [types-all]
+        args:
+        -   --ignore-missing-imports
+        -   --scripts-are-modules
+        -   --no-warn-unused-ignores
+        -   --show-error-codes
         exclude: ^testing/resources/
 -   repo: https://github.com/sirosen/check-jsonschema
     rev: 0.14.1

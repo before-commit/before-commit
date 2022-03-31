@@ -13,11 +13,12 @@ if sys.platform == 'win32':  # pragma: no cover (windows)
         from ctypes.wintypes import BOOL
         from ctypes.wintypes import DWORD
         from ctypes.wintypes import HANDLE
+        from typing import Any
 
         STD_ERROR_HANDLE = -12
         ENABLE_VIRTUAL_TERMINAL_PROCESSING = 4
 
-        def bool_errcheck(result, func, args):
+        def bool_errcheck(result: Any, func: Any, args: Any) -> Any:
             if not result:
                 raise WinError()
             return args
@@ -30,13 +31,17 @@ if sys.platform == 'win32':  # pragma: no cover (windows)
             ('GetConsoleMode', windll.kernel32),
             ((1, 'hConsoleHandle'), (2, 'lpMode')),
         )
-        GetConsoleMode.errcheck = bool_errcheck
+        GetConsoleMode.errcheck = (  # type: ignore[assignment, misc]
+            bool_errcheck  # type: ignore[assignment]
+        )
 
         SetConsoleMode = WINFUNCTYPE(BOOL, HANDLE, DWORD)(
             ('SetConsoleMode', windll.kernel32),
             ((1, 'hConsoleHandle'), (1, 'dwMode')),
         )
-        SetConsoleMode.errcheck = bool_errcheck
+        SetConsoleMode.errcheck = (  # type: ignore[assignment, misc]
+            bool_errcheck  # type: ignore[assignment]
+        )
 
         # As of Windows 10, the Windows console supports (some) ANSI escape
         # sequences, but it needs to be enabled using `SetConsoleMode` first.
