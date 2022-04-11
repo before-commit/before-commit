@@ -63,11 +63,11 @@ def _get_docker_path(path: str) -> str:
     return path
 
 
-def md5(s: str) -> str:  # pragma: win32 no cover
+def md5(s: str) -> str:  # pragma: win32 no cover # pragma: darwin no cover
     return hashlib.md5(s.encode()).hexdigest()
 
 
-def docker_tag(prefix: Prefix) -> str:  # pragma: win32 no cover
+def docker_tag(prefix: Prefix) -> str:  # pragma: win32 no cover # pragma: darwin no cover # noqa: E501
     md5sum = md5(os.path.basename(prefix.prefix_dir)).lower()
     return f'pre-commit-{md5sum}'
 
@@ -76,7 +76,7 @@ def build_docker_image(
         prefix: Prefix,
         *,
         pull: bool,
-) -> None:  # pragma: win32 no cover
+) -> None:  # pragma: win32 no cover # pragma: darwin no cover
     cmd: tuple[str, ...] = (
         'docker', 'build',
         '--tag', docker_tag(prefix),
@@ -91,7 +91,7 @@ def build_docker_image(
 
 def install_environment(
         prefix: Prefix, version: str, additional_dependencies: Sequence[str],
-) -> None:  # pragma: win32 no cover
+) -> None:  # pragma: win32 no cover # pragma: darwin no cover
     helpers.assert_version_default('docker', version)
     helpers.assert_no_additional_deps('docker', additional_dependencies)
 
@@ -106,7 +106,7 @@ def install_environment(
         os.mkdir(directory)
 
 
-def get_docker_user() -> tuple[str, ...]:  # pragma: win32 no cover
+def get_docker_user() -> tuple[str, ...]:  # pragma: win32 no cover # pragma: darwin no cover # noqa: E501
     try:
         return (
             '-u',
@@ -116,7 +116,7 @@ def get_docker_user() -> tuple[str, ...]:  # pragma: win32 no cover
         return ()
 
 
-def docker_cmd() -> tuple[str, ...]:  # pragma: win32 no cover
+def docker_cmd() -> tuple[str, ...]:  # pragma: win32 no cover # pragma: darwin no cover # noqa: E501
     return (
         'docker', 'run',
         '--rm',
@@ -133,7 +133,7 @@ def run_hook(
         hook: Hook,
         file_args: Sequence[str],
         color: bool,
-) -> tuple[int, bytes]:  # pragma: win32 no cover
+) -> tuple[int, bytes]:  # pragma: win32 no cover # pragma: darwin no cover
     # Rebuild the docker image in case it has gone missing, as many people do
     # automated cleanup of docker images.
     build_docker_image(hook.prefix, pull=False)

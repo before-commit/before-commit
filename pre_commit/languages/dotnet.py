@@ -21,14 +21,14 @@ get_default_version = helpers.basic_get_default_version
 healthy = helpers.basic_healthy
 
 
-def get_env_patch(venv: str) -> PatchesT:
+def get_env_patch(venv: str) -> PatchesT:  # pragma: darwin no cover
     return (
         ('PATH', (os.path.join(venv, BIN_DIR), os.pathsep, Var('PATH'))),
     )
 
 
 @contextlib.contextmanager
-def in_env(prefix: Prefix) -> Generator[None, None, None]:
+def in_env(prefix: Prefix) -> Generator[None, None, None]:  # pragma: darwin no cover # noqa: E501
     directory = helpers.environment_dir(ENVIRONMENT_DIR, C.DEFAULT)
     envdir = prefix.path(directory)
     with envcontext(get_env_patch(envdir)):
@@ -39,7 +39,7 @@ def install_environment(
         prefix: Prefix,
         version: str,
         additional_dependencies: Sequence[str],
-) -> None:
+) -> None:  # pragma: darwin no cover
     helpers.assert_version_default('dotnet', version)
     helpers.assert_no_additional_deps('dotnet', additional_dependencies)
 
@@ -85,6 +85,6 @@ def run_hook(
         hook: Hook,
         file_args: Sequence[str],
         color: bool,
-) -> tuple[int, bytes]:
+) -> tuple[int, bytes]:  # pragma: darwin no cover
     with in_env(hook.prefix):
         return helpers.run_xargs(hook, hook.cmd, file_args, color=color)

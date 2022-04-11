@@ -16,7 +16,7 @@ from testing.auto_namedtuple import auto_namedtuple
 TESTING_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
-def docker_is_running() -> bool:  # pragma: win32 no cover
+def docker_is_running() -> bool:  # pragma: win32 no cover # pragma: darwin no cover # noqa: E501
     try:
         cmd_output_b('docker', 'ps')
     except CalledProcessError:  # pragma: no cover
