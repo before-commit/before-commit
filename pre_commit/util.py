@@ -222,7 +222,7 @@ if sys.platform != 'win32':  # pragma: win32 no cover
             while True:
                 try:
                     bts = os.read(pty.r, 4096)
-                except OSError as e:
+                except OSError as e:  # pragma: darwin no cover
                     if e.errno == errno.EIO:
                         bts = b''
                     else:

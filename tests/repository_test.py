@@ -208,7 +208,7 @@ def test_run_a_coursier_hook(tempdir_factory, store):
     )
 
 
-@skipif_cant_run_docker  # pragma: win32 no cover
+@skipif_cant_run_docker  # pragma: win32 no cover # pragma: darwin no cover
 def test_run_a_docker_hook(tempdir_factory, store):
     _test_hook_repo(
         tempdir_factory, store, 'docker_hooks_repo',
@@ -217,7 +217,7 @@ def test_run_a_docker_hook(tempdir_factory, store):
     )
 
 
-@skipif_cant_run_docker  # pragma: win32 no cover
+@skipif_cant_run_docker  # pragma: win32 no cover # pragma: darwin no cover
 def test_run_a_docker_hook_with_entry_args(tempdir_factory, store):
     _test_hook_repo(
         tempdir_factory, store, 'docker_hooks_repo',
@@ -226,7 +226,7 @@ def test_run_a_docker_hook_with_entry_args(tempdir_factory, store):
     )
 
 
-@skipif_cant_run_docker  # pragma: win32 no cover
+@skipif_cant_run_docker  # pragma: win32 no cover # pragma: darwin no cover
 def test_run_a_failing_docker_hook(tempdir_factory, store):
     _test_hook_repo(
         tempdir_factory, store, 'docker_hooks_repo',
@@ -237,7 +237,7 @@ def test_run_a_failing_docker_hook(tempdir_factory, store):
     )
 
 
-@skipif_cant_run_docker  # pragma: win32 no cover
+@skipif_cant_run_docker  # pragma: win32 no cover # pragma: darwin no cover
 @pytest.mark.parametrize('hook_id', ('echo-entrypoint', 'echo-cmd'))
 def test_run_a_docker_image_hook(tempdir_factory, store, hook_id):
     _test_hook_repo(
@@ -1045,7 +1045,7 @@ def test_local_perl_additional_dependencies(store):
         'dotnet_hooks_sln_repo',
     ),
 )
-def test_dotnet_hook(tempdir_factory, store, repo):
+def test_dotnet_hook(tempdir_factory, store, repo):  # pragma: darwin no cover
     _test_hook_repo(
         tempdir_factory, store, repo,
         'dotnet-example-hook', [], b'Hello from dotnet!\n',
