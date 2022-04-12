@@ -24,6 +24,8 @@ jobs:
         os:
           - ubuntu-latest
           - macos-latest
+          - windows-2019
+          - windows-2022
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -41,12 +43,14 @@ jobs:
       PYTEST_ADDOPTS: "--parallel --run-integration --showlocals -vv --durations=10 --reruns 5 --only-rerun subprocess.CalledProcessError"
       PY_COLORS: 1
       TOX_PARALLEL_NO_SPINNER: 1
+      GO111MODULE: auto
     strategy:
       fail-fast: false
       matrix:
         os:
           - ubuntu-latest
           - macos-latest
+          - windows-2019
         py:
           - '3.7'
           - '3.8'
@@ -61,10 +65,19 @@ jobs:
       - uses: actions/setup-dotnet@v2
         with:
           dotnet-version: '3.1.x'
-      - uses: conda-incubator/setup-miniconda@v2
+
+      # Use the pre-installed Conda
+      - if: startsWith(matrix.os, 'windows')
+        name: Add Conda to PATH
+        run: echo $env:CONDA\Scripts | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
+        shell: pwsh
+      - if: "!startsWith(matrix.os, 'windows')"
+        uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
           python-version: ${{ matrix.py }}
+          auto-activate-base: true
+          allow-softlinks: true
       - uses: dart-lang/setup-dart@v1
       - uses: coursier/cache-action@v6
       - uses: coursier/setup-action@v1
