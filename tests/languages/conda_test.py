@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import pytest
-
-from pre_commit import envcontext
 from pre_commit.languages.conda import _conda_exe
+
+from before_commit import envcontext
 
 
 @pytest.mark.parametrize(

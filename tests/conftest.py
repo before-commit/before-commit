@@ -7,13 +7,13 @@ import os.path
 from unittest import mock
 
 import pytest
-
-from pre_commit import output
 from pre_commit.envcontext import envcontext
 from pre_commit.logging_handler import logging_handler
 from pre_commit.store import Store
 from pre_commit.util import cmd_output
 from pre_commit.util import make_executable
+
+from before_commit import output
 from testing.fixtures import git_dir
 from testing.fixtures import make_consuming_repo
 from testing.fixtures import write_config

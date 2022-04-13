@@ -7,8 +7,6 @@ import sys
 from typing import Any
 from typing import Sequence
 
-import pre_commit.constants as C
-from pre_commit import git
 from pre_commit.color import add_color_option
 from pre_commit.commands.autoupdate import autoupdate
 from pre_commit.commands.clean import clean
@@ -25,6 +23,9 @@ from pre_commit.commands.try_repo import try_repo
 from pre_commit.error_handler import error_handler
 from pre_commit.logging_handler import logging_handler
 from pre_commit.store import Store
+
+import before_commit.constants as C
+from before_commit import git
 
 
 logger = logging.getLogger('pre_commit')

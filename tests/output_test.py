@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import io
 
-from pre_commit import output
+from before_commit import output
 
 
 def test_output_write_writes():

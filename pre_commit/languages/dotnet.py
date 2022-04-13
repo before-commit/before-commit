@@ -5,7 +5,6 @@ import os.path
 from typing import Generator
 from typing import Sequence
 
-import pre_commit.constants as C
 from pre_commit.envcontext import envcontext
 from pre_commit.envcontext import PatchesT
 from pre_commit.envcontext import Var
@@ -13,6 +12,8 @@ from pre_commit.hook import Hook
 from pre_commit.languages import helpers
 from pre_commit.prefix import Prefix
 from pre_commit.util import clean_path_on_failure
+
+import before_commit.constants as C
 
 ENVIRONMENT_DIR = 'dotnetenv'
 BIN_DIR = 'bin'

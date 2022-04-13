@@ -6,12 +6,12 @@ import sys
 from unittest import mock
 
 import pytest
-
-import pre_commit.constants as C
-from pre_commit import parse_shebang
 from pre_commit.languages import helpers
 from pre_commit.prefix import Prefix
 from pre_commit.util import CalledProcessError
+
+import before_commit.constants as C
+from before_commit import parse_shebang
 from testing.auto_namedtuple import auto_namedtuple
 
 

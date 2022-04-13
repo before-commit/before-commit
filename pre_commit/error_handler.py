@@ -8,12 +8,13 @@ import traceback
 from typing import Generator
 from typing import IO
 
-import pre_commit.constants as C
-from pre_commit import output
 from pre_commit.errors import FatalError
 from pre_commit.store import Store
 from pre_commit.util import cmd_output_b
 from pre_commit.util import force_bytes
+
+import before_commit.constants as C
+from before_commit import output
 
 
 def _log_and_exit(

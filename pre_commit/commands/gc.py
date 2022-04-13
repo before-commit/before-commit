@@ -3,8 +3,6 @@ from __future__ import annotations
 import os.path
 from typing import Any
 
-import pre_commit.constants as C
-from pre_commit import output
 from pre_commit.clientlib import InvalidConfigError
 from pre_commit.clientlib import InvalidManifestError
 from pre_commit.clientlib import load_config
@@ -12,6 +10,9 @@ from pre_commit.clientlib import load_manifest
 from pre_commit.clientlib import LOCAL
 from pre_commit.clientlib import META
 from pre_commit.store import Store
+
+import before_commit.constants as C
+from before_commit import output
 
 
 def _mark_used_repos(

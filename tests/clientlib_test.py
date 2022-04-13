@@ -5,8 +5,6 @@ import re
 
 import cfgv
 import pytest
-
-import pre_commit.constants as C
 from pre_commit.clientlib import check_type_tag
 from pre_commit.clientlib import CONFIG_HOOK_DICT
 from pre_commit.clientlib import CONFIG_REPO_DICT
@@ -17,6 +15,8 @@ from pre_commit.clientlib import META_HOOK_DICT
 from pre_commit.clientlib import MigrateShaToRev
 from pre_commit.clientlib import validate_config_main
 from pre_commit.clientlib import validate_manifest_main
+
+import before_commit.constants as C
 from testing.fixtures import sample_local_config
 
 

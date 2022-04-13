@@ -5,13 +5,13 @@ import tarfile
 from unittest import mock
 
 import pytest
-
-import pre_commit.constants as C
-from pre_commit import parse_shebang
 from pre_commit.languages import ruby
 from pre_commit.prefix import Prefix
 from pre_commit.util import cmd_output
 from pre_commit.util import resource_bytesio
+
+import before_commit.constants as C
+from before_commit import parse_shebang
 from testing.util import xfailif_windows
 
 

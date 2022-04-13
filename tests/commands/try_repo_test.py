@@ -6,10 +6,10 @@ import time
 from unittest import mock
 
 import re_assert
-
-from pre_commit import git
 from pre_commit.commands.try_repo import try_repo
 from pre_commit.util import cmd_output
+
+from before_commit import git
 from testing.auto_namedtuple import auto_namedtuple
 from testing.fixtures import git_dir
 from testing.fixtures import make_repo

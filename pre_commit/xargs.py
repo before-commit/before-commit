@@ -14,9 +14,10 @@ from typing import MutableMapping
 from typing import Sequence
 from typing import TypeVar
 
-from pre_commit import parse_shebang
 from pre_commit.util import cmd_output_b
 from pre_commit.util import cmd_output_p
+
+from before_commit import parse_shebang
 
 TArg = TypeVar('TArg')
 TRet = TypeVar('TRet')

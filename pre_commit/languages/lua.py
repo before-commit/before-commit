@@ -6,7 +6,6 @@ import sys
 from typing import Generator
 from typing import Sequence
 
-import pre_commit.constants as C
 from pre_commit.envcontext import envcontext
 from pre_commit.envcontext import PatchesT
 from pre_commit.envcontext import Var
@@ -15,6 +14,8 @@ from pre_commit.languages import helpers
 from pre_commit.prefix import Prefix
 from pre_commit.util import clean_path_on_failure
 from pre_commit.util import cmd_output
+
+import before_commit.constants as C
 
 ENVIRONMENT_DIR = 'lua_env'
 get_default_version = helpers.basic_get_default_version

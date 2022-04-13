@@ -7,11 +7,11 @@ from unittest import mock
 
 import pytest
 import re_assert
-
-from pre_commit import error_handler
 from pre_commit.errors import FatalError
 from pre_commit.store import Store
 from pre_commit.util import CalledProcessError
+
+from before_commit import error_handler
 from testing.util import cmd_output_mocked_pre_commit_home
 from testing.util import xfailif_windows
 

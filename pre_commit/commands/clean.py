@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import os.path
 
-from pre_commit import output
 from pre_commit.store import Store
 from pre_commit.util import rmtree
+
+from before_commit import output
 
 
 def clean(store: Store) -> int:

@@ -18,7 +18,7 @@ from typing import IO
 
 import yaml
 
-from pre_commit import parse_shebang
+from before_commit import parse_shebang
 
 Loader = getattr(yaml, 'CSafeLoader', yaml.SafeLoader)
 yaml_load = functools.partial(yaml.load, Loader=Loader)

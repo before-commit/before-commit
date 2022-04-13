@@ -6,12 +6,12 @@ import stat
 from unittest import mock
 
 import pytest
-
-from pre_commit import git
 from pre_commit.store import _get_default_directory
 from pre_commit.store import Store
 from pre_commit.util import CalledProcessError
 from pre_commit.util import cmd_output
+
+from before_commit import git
 from testing.fixtures import git_dir
 from testing.util import cwd
 from testing.util import git_commit

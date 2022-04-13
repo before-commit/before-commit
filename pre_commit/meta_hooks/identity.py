@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from typing import Sequence
 
-from pre_commit import output
+from before_commit import output
 
 
 def main(argv: Sequence[str] | None = None) -> int:

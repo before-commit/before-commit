@@ -5,12 +5,12 @@ import re
 from typing import Sequence
 
 from cfgv import apply_defaults
-
-import pre_commit.constants as C
-from pre_commit import git
 from pre_commit.clientlib import load_config
 from pre_commit.clientlib import MANIFEST_HOOK_DICT
 from pre_commit.commands.run import Classifier
+
+import before_commit.constants as C
+from before_commit import git
 
 
 def exclude_matches_any(

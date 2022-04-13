@@ -4,9 +4,6 @@ import argparse
 import logging
 import os.path
 
-import pre_commit.constants as C
-from pre_commit import git
-from pre_commit import output
 from pre_commit.clientlib import load_manifest
 from pre_commit.commands.run import run
 from pre_commit.store import Store
@@ -14,6 +11,10 @@ from pre_commit.util import cmd_output_b
 from pre_commit.util import tmpdir
 from pre_commit.util import yaml_dump
 from pre_commit.xargs import xargs
+
+import before_commit.constants as C
+from before_commit import git
+from before_commit import output
 
 logger = logging.getLogger(__name__)
 
