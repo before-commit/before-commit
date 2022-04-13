@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  pre-commit:
+  before-commit:
     strategy:
       matrix:
         os:
