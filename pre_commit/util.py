@@ -259,7 +259,12 @@ def rmtree(path: str) -> None:
 
 def parse_version(s: str) -> tuple[int, ...]:
     """poor man's version comparison"""
-    return tuple(int(p) for p in s.split('.'))
+    ver_lst = list(p for p in s.split('.'))
+    if ver_lst[-1].startswith('post'):
+        ver_lst[-1] = ver_lst[-1][4:]
+    else:
+        ver_lst.append('0')
+    return tuple(int(p) for p in ver_lst)
 
 
 def win_exe(s: str) -> str:

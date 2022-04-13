@@ -109,6 +109,9 @@ def test_cmd_output_no_shebang(tmpdir, fn):
 
 def test_parse_version():
     assert parse_version('0.0') == parse_version('0.0')
+    assert parse_version('0.0.post1') == parse_version('0.0.post1')
+    assert parse_version('0.0.post0') < parse_version('0.0.post1')
+    assert parse_version('0.0') < parse_version('0.0.post1')
     assert parse_version('0.1') > parse_version('0.0')
     assert parse_version('2.1') >= parse_version('2')
 
