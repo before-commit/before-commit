@@ -7,10 +7,11 @@ from typing import NamedTuple
 from typing import Pattern
 from typing import Sequence
 
-from pre_commit import output
 from pre_commit.hook import Hook
 from pre_commit.languages import helpers
 from pre_commit.xargs import xargs
+
+from before_commit import output
 
 ENVIRONMENT_DIR = None
 get_default_version = helpers.basic_get_default_version

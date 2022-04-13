@@ -8,8 +8,8 @@ from unittest import mock
 
 import pytest
 
-from pre_commit import parse_shebang
-from pre_commit import xargs
+from before_commit import parse_shebang
+from before_commit import xargs
 
 
 @pytest.mark.parametrize(

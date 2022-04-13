@@ -6,8 +6,6 @@ import sys
 from typing import Generator
 from typing import Sequence
 
-import pre_commit.constants as C
-from pre_commit import git
 from pre_commit.envcontext import envcontext
 from pre_commit.envcontext import PatchesT
 from pre_commit.envcontext import Var
@@ -18,6 +16,9 @@ from pre_commit.util import clean_path_on_failure
 from pre_commit.util import cmd_output
 from pre_commit.util import cmd_output_b
 from pre_commit.util import rmtree
+
+import before_commit.constants as C
+from before_commit import git
 
 ENVIRONMENT_DIR = 'golangenv'
 get_default_version = helpers.basic_get_default_version

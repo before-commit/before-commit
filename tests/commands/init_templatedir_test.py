@@ -4,11 +4,11 @@ import os.path
 from unittest import mock
 
 import pytest
-
-import pre_commit.constants as C
 from pre_commit.commands.init_templatedir import init_templatedir
 from pre_commit.envcontext import envcontext
 from pre_commit.util import cmd_output
+
+import before_commit.constants as C
 from testing.fixtures import git_dir
 from testing.fixtures import make_consuming_repo
 from testing.util import cmd_output_mocked_pre_commit_home

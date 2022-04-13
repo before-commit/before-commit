@@ -4,9 +4,6 @@ import os.path
 import re
 
 import re_assert
-
-import pre_commit.constants as C
-from pre_commit import git
 from pre_commit.commands.install_uninstall import CURRENT_HASH
 from pre_commit.commands.install_uninstall import install
 from pre_commit.commands.install_uninstall import install_hooks
@@ -17,6 +14,9 @@ from pre_commit.parse_shebang import find_executable
 from pre_commit.util import cmd_output
 from pre_commit.util import make_executable
 from pre_commit.util import resource_text
+
+import before_commit.constants as C
+from before_commit import git
 from testing.fixtures import add_config_to_repo
 from testing.fixtures import git_dir
 from testing.fixtures import make_consuming_repo

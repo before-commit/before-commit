@@ -7,14 +7,15 @@ import shutil
 import sys
 from typing import Sequence
 
-from pre_commit import git
-from pre_commit import output
 from pre_commit.clientlib import load_config
 from pre_commit.repository import all_hooks
 from pre_commit.repository import install_hook_envs
 from pre_commit.store import Store
 from pre_commit.util import make_executable
 from pre_commit.util import resource_text
+
+from before_commit import git
+from before_commit import output
 
 
 logger = logging.getLogger(__name__)

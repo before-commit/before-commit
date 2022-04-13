@@ -5,13 +5,13 @@ import sys
 from unittest import mock
 
 import pytest
-
-import pre_commit.constants as C
-from pre_commit import git
 from pre_commit.commands import hook_impl
 from pre_commit.envcontext import envcontext
 from pre_commit.util import cmd_output
 from pre_commit.util import make_executable
+
+import before_commit.constants as C
+from before_commit import git
 from testing.fixtures import git_dir
 from testing.fixtures import sample_local_config
 from testing.fixtures import write_config

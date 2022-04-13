@@ -5,10 +5,10 @@ import os.path
 import shutil
 
 import pytest
-
-from pre_commit import git
 from pre_commit.staged_files_only import staged_files_only
 from pre_commit.util import cmd_output
+
+from before_commit import git
 from testing.auto_namedtuple import auto_namedtuple
 from testing.fixtures import git_dir
 from testing.util import cwd

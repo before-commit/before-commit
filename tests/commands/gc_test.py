@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import os
 
-import pre_commit.constants as C
-from pre_commit import git
 from pre_commit.clientlib import load_config
 from pre_commit.commands.autoupdate import autoupdate
 from pre_commit.commands.gc import gc
 from pre_commit.commands.install_uninstall import install_hooks
 from pre_commit.repository import all_hooks
+
+import before_commit.constants as C
+from before_commit import git
 from testing.fixtures import make_config_from_repo
 from testing.fixtures import make_repo
 from testing.fixtures import modify_config

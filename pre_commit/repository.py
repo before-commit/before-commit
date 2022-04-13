@@ -6,7 +6,6 @@ import os
 from typing import Any
 from typing import Sequence
 
-import pre_commit.constants as C
 from pre_commit.clientlib import load_manifest
 from pre_commit.clientlib import LOCAL
 from pre_commit.clientlib import META
@@ -17,6 +16,8 @@ from pre_commit.prefix import Prefix
 from pre_commit.store import Store
 from pre_commit.util import parse_version
 from pre_commit.util import rmtree
+
+import before_commit.constants as C
 
 
 logger = logging.getLogger('pre_commit')

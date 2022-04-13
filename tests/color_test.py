@@ -4,11 +4,11 @@ import sys
 from unittest import mock
 
 import pytest
-
-from pre_commit import envcontext
 from pre_commit.color import format_color
 from pre_commit.color import GREEN
 from pre_commit.color import use_color
+
+from before_commit import envcontext
 
 
 @pytest.mark.parametrize(

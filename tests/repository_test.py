@@ -9,9 +9,6 @@ from unittest import mock
 import cfgv
 import pytest
 import re_assert
-
-import pre_commit.constants as C
-from pre_commit import git
 from pre_commit.clientlib import CONFIG_SCHEMA
 from pre_commit.clientlib import load_manifest
 from pre_commit.envcontext import envcontext
@@ -28,6 +25,9 @@ from pre_commit.repository import all_hooks
 from pre_commit.repository import install_hook_envs
 from pre_commit.util import cmd_output
 from pre_commit.util import cmd_output_b
+
+import before_commit.constants as C
+from before_commit import git
 from testing.fixtures import make_config_from_repo
 from testing.fixtures import make_repo
 from testing.fixtures import modify_manifest

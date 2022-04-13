@@ -7,7 +7,6 @@ import sys
 from typing import Generator
 from typing import Sequence
 
-import pre_commit.constants as C
 from pre_commit.envcontext import envcontext
 from pre_commit.envcontext import PatchesT
 from pre_commit.envcontext import UNSET
@@ -20,6 +19,8 @@ from pre_commit.util import clean_path_on_failure
 from pre_commit.util import cmd_output
 from pre_commit.util import cmd_output_b
 from pre_commit.util import rmtree
+
+import before_commit.constants as C
 
 ENVIRONMENT_DIR = 'node_env'
 

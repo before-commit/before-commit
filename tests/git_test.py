@@ -3,10 +3,10 @@ from __future__ import annotations
 import os.path
 
 import pytest
-
-from pre_commit import git
 from pre_commit.error_handler import FatalError
 from pre_commit.util import cmd_output
+
+from before_commit import git
 from testing.util import git_commit
 
 

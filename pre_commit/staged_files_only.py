@@ -6,11 +6,12 @@ import os.path
 import time
 from typing import Generator
 
-from pre_commit import git
 from pre_commit.util import CalledProcessError
 from pre_commit.util import cmd_output
 from pre_commit.util import cmd_output_b
 from pre_commit.xargs import xargs
+
+from before_commit import git
 
 
 logger = logging.getLogger('pre_commit')

@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import logging
 
-from pre_commit import color
 from pre_commit.logging_handler import LoggingHandler
+
+from before_commit import color
 
 
 def _log_record(message, level):

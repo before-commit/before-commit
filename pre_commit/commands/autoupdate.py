@@ -6,9 +6,6 @@ from typing import Any
 from typing import NamedTuple
 from typing import Sequence
 
-import pre_commit.constants as C
-from pre_commit import git
-from pre_commit import output
 from pre_commit.clientlib import InvalidManifestError
 from pre_commit.clientlib import load_config
 from pre_commit.clientlib import load_manifest
@@ -22,6 +19,10 @@ from pre_commit.util import cmd_output_b
 from pre_commit.util import tmpdir
 from pre_commit.util import yaml_dump
 from pre_commit.util import yaml_load
+
+import before_commit.constants as C
+from before_commit import git
+from before_commit import output
 
 
 class RevInfo(NamedTuple):

@@ -4,8 +4,8 @@ import contextlib
 import logging
 from typing import Generator
 
-from pre_commit import color
-from pre_commit import output
+from before_commit import color
+from before_commit import output
 
 logger = logging.getLogger('pre_commit')
 

@@ -9,12 +9,13 @@ from typing import overload
 from typing import Sequence
 from typing import TYPE_CHECKING
 
-import pre_commit.constants as C
-from pre_commit import parse_shebang
 from pre_commit.hook import Hook
 from pre_commit.prefix import Prefix
 from pre_commit.util import cmd_output_b
 from pre_commit.xargs import xargs
+
+import before_commit.constants as C
+from before_commit import parse_shebang
 
 if TYPE_CHECKING:
     from typing import NoReturn

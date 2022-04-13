@@ -5,11 +5,11 @@ import os.path
 from unittest import mock
 
 import pytest
-
-import pre_commit.constants as C
-from pre_commit import main
 from pre_commit.errors import FatalError
 from pre_commit.util import cmd_output
+
+import before_commit.constants as C
+from before_commit import main
 from testing.auto_namedtuple import auto_namedtuple
 from testing.util import cwd
 

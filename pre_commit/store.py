@@ -9,14 +9,15 @@ from typing import Callable
 from typing import Generator
 from typing import Sequence
 
-import pre_commit.constants as C
-from pre_commit import file_lock
-from pre_commit import git
 from pre_commit.util import CalledProcessError
 from pre_commit.util import clean_path_on_failure
 from pre_commit.util import cmd_output_b
 from pre_commit.util import resource_text
 from pre_commit.util import rmtree
+
+import before_commit.constants as C
+from before_commit import file_lock
+from before_commit import git
 
 
 logger = logging.getLogger('pre_commit')

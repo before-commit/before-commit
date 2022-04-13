@@ -3,12 +3,13 @@ from __future__ import annotations
 import argparse
 from typing import Sequence
 
-import pre_commit.constants as C
-from pre_commit import git
 from pre_commit.clientlib import load_config
 from pre_commit.commands.run import Classifier
 from pre_commit.repository import all_hooks
 from pre_commit.store import Store
+
+import before_commit.constants as C
+from before_commit import git
 
 
 def check_all_hooks_match_files(config_file: str) -> int:

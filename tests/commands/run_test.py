@@ -8,9 +8,6 @@ from typing import MutableMapping
 from unittest import mock
 
 import pytest
-
-import pre_commit.constants as C
-from pre_commit import color
 from pre_commit.commands.install_uninstall import install
 from pre_commit.commands.run import _compute_cols
 from pre_commit.commands.run import _full_msg
@@ -22,6 +19,9 @@ from pre_commit.commands.run import filter_by_include_exclude
 from pre_commit.commands.run import run
 from pre_commit.util import cmd_output
 from pre_commit.util import make_executable
+
+import before_commit.constants as C
+from before_commit import color
 from testing.auto_namedtuple import auto_namedtuple
 from testing.fixtures import add_config_to_repo
 from testing.fixtures import git_dir

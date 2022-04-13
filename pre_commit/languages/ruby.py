@@ -8,7 +8,6 @@ import tarfile
 from typing import Generator
 from typing import Sequence
 
-import pre_commit.constants as C
 from pre_commit.envcontext import envcontext
 from pre_commit.envcontext import PatchesT
 from pre_commit.envcontext import UNSET
@@ -19,6 +18,8 @@ from pre_commit.prefix import Prefix
 from pre_commit.util import CalledProcessError
 from pre_commit.util import clean_path_on_failure
 from pre_commit.util import resource_bytesio
+
+import before_commit.constants as C
 
 ENVIRONMENT_DIR = 'rbenv'
 healthy = helpers.basic_healthy
