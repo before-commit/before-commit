@@ -5,7 +5,7 @@ from unittest import mock
 
 import pytest
 
-from pre_commit.commands.clean import clean
+from before_commit.commands.clean import clean
 
 
 @pytest.fixture(autouse=True)

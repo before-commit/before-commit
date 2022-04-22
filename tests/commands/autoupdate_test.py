@@ -5,16 +5,16 @@ from unittest import mock
 
 import pytest
 import yaml
-from pre_commit.commands.autoupdate import _check_hooks_still_exist_at_rev
-from pre_commit.commands.autoupdate import autoupdate
-from pre_commit.commands.autoupdate import RepositoryCannotBeUpdatedError
-from pre_commit.commands.autoupdate import RevInfo
-from pre_commit.util import cmd_output
 
 import before_commit.constants as C
 from before_commit import envcontext
 from before_commit import git
 from before_commit import util
+from before_commit.commands.autoupdate import _check_hooks_still_exist_at_rev
+from before_commit.commands.autoupdate import autoupdate
+from before_commit.commands.autoupdate import RepositoryCannotBeUpdatedError
+from before_commit.commands.autoupdate import RevInfo
+from before_commit.util import cmd_output
 from testing.auto_namedtuple import auto_namedtuple
 from testing.fixtures import add_config_to_repo
 from testing.fixtures import make_config_from_repo

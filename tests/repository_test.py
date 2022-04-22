@@ -9,25 +9,25 @@ from unittest import mock
 import cfgv
 import pytest
 import re_assert
-from pre_commit.clientlib import CONFIG_SCHEMA
-from pre_commit.clientlib import load_manifest
-from pre_commit.envcontext import envcontext
-from pre_commit.hook import Hook
-from pre_commit.languages import golang
-from pre_commit.languages import helpers
-from pre_commit.languages import node
-from pre_commit.languages import python
-from pre_commit.languages import ruby
-from pre_commit.languages import rust
-from pre_commit.languages.all import languages
-from pre_commit.prefix import Prefix
-from pre_commit.repository import all_hooks
-from pre_commit.repository import install_hook_envs
-from pre_commit.util import cmd_output
-from pre_commit.util import cmd_output_b
 
 import before_commit.constants as C
 from before_commit import git
+from before_commit.clientlib import CONFIG_SCHEMA
+from before_commit.clientlib import load_manifest
+from before_commit.envcontext import envcontext
+from before_commit.hook import Hook
+from before_commit.languages import golang
+from before_commit.languages import helpers
+from before_commit.languages import node
+from before_commit.languages import python
+from before_commit.languages import ruby
+from before_commit.languages import rust
+from before_commit.languages.all import languages
+from before_commit.prefix import Prefix
+from before_commit.repository import all_hooks
+from before_commit.repository import install_hook_envs
+from before_commit.util import cmd_output
+from before_commit.util import cmd_output_b
 from testing.fixtures import make_config_from_repo
 from testing.fixtures import make_repo
 from testing.fixtures import modify_manifest

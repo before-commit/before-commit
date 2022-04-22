@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from pre_commit.languages import pygrep
+from before_commit.languages import pygrep
 
 
 @pytest.fixture

@@ -8,7 +8,7 @@ import sys
 import tempfile
 import zipfile
 
-from pre_commit.file_lock import lock
+from before_commit.file_lock import lock
 
 CACHE_DIR = os.path.expanduser('~/.cache/pre-commit-zipapp')
 
@@ -57,7 +57,7 @@ def main() -> int:
     else:
         exe = os.path.join(cache_dest, 'python.exe')
 
-    cmd = (exe, '-mpre_commit', *sys.argv[1:])
+    cmd = (exe, '-mbefore_commit', *sys.argv[1:])
     if sys.platform == 'win32':  # https://bugs.python.org/issue19124
         import subprocess
 

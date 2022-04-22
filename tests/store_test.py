@@ -6,12 +6,12 @@ import stat
 from unittest import mock
 
 import pytest
-from pre_commit.store import _get_default_directory
-from pre_commit.store import Store
-from pre_commit.util import CalledProcessError
-from pre_commit.util import cmd_output
 
 from before_commit import git
+from before_commit.store import _get_default_directory
+from before_commit.store import Store
+from before_commit.util import CalledProcessError
+from before_commit.util import cmd_output
 from testing.fixtures import git_dir
 from testing.util import cwd
 from testing.util import git_commit
@@ -185,7 +185,7 @@ def test_db_repo_name(store):
 def test_local_resources_reflects_reality():
     on_disk = {
         res[len('empty_template_'):]
-        for res in os.listdir('pre_commit/resources')
+        for res in os.listdir('before_commit/resources')
         if res.startswith('empty_template_')
     }
     assert on_disk == {os.path.basename(x) for x in Store.LOCAL_RESOURCES}

@@ -5,13 +5,13 @@ import sys
 from unittest import mock
 
 import pytest
-from pre_commit.envcontext import envcontext
-from pre_commit.languages import python
-from pre_commit.prefix import Prefix
-from pre_commit.util import make_executable
-from pre_commit.util import win_exe
 
 import before_commit.constants as C
+from before_commit.envcontext import envcontext
+from before_commit.languages import python
+from before_commit.prefix import Prefix
+from before_commit.util import make_executable
+from before_commit.util import win_exe
 
 
 def test_read_pyvenv_cfg(tmpdir):

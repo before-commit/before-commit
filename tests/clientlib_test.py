@@ -5,18 +5,18 @@ import re
 
 import cfgv
 import pytest
-from pre_commit.clientlib import check_type_tag
-from pre_commit.clientlib import CONFIG_HOOK_DICT
-from pre_commit.clientlib import CONFIG_REPO_DICT
-from pre_commit.clientlib import CONFIG_SCHEMA
-from pre_commit.clientlib import DEFAULT_LANGUAGE_VERSION
-from pre_commit.clientlib import MANIFEST_SCHEMA
-from pre_commit.clientlib import META_HOOK_DICT
-from pre_commit.clientlib import MigrateShaToRev
-from pre_commit.clientlib import validate_config_main
-from pre_commit.clientlib import validate_manifest_main
 
 import before_commit.constants as C
+from before_commit.clientlib import check_type_tag
+from before_commit.clientlib import CONFIG_HOOK_DICT
+from before_commit.clientlib import CONFIG_REPO_DICT
+from before_commit.clientlib import CONFIG_SCHEMA
+from before_commit.clientlib import DEFAULT_LANGUAGE_VERSION
+from before_commit.clientlib import MANIFEST_SCHEMA
+from before_commit.clientlib import META_HOOK_DICT
+from before_commit.clientlib import MigrateShaToRev
+from before_commit.clientlib import validate_config_main
+from before_commit.clientlib import validate_manifest_main
 from testing.fixtures import sample_local_config
 
 
@@ -140,7 +140,7 @@ def test_validate_warn_on_unknown_keys_at_repo_level(tmpdir, caplog):
     assert not ret_val
     assert caplog.record_tuples == [
         (
-            'pre_commit',
+            'before_commit',
             logging.WARNING,
             'Unexpected key(s) present on https://gitlab.com/pycqa/flake8: '
             'args',
@@ -163,7 +163,7 @@ def test_validate_warn_on_unknown_keys_at_top_level(tmpdir, caplog):
     assert not ret_val
     assert caplog.record_tuples == [
         (
-            'pre_commit',
+            'before_commit',
             logging.WARNING,
             'Unexpected key(s) present at root: foo',
         ),
@@ -225,7 +225,7 @@ def test_warn_mutable_rev_invalid(caplog, rev):
 
     assert caplog.record_tuples == [
         (
-            'pre_commit',
+            'before_commit',
             logging.WARNING,
             "The 'rev' field of repo 'https://gitlab.com/pycqa/flake8' "
             'appears to be a mutable reference (moving tag / branch).  '
@@ -281,7 +281,9 @@ def test_validate_optional_sensible_regex_at_hook(caplog, regex, warning):
     }
     cfgv.validate(config_obj, CONFIG_HOOK_DICT)
 
-    assert caplog.record_tuples == [('pre_commit', logging.WARNING, warning)]
+    assert caplog.record_tuples == [
+        ('before_commit', logging.WARNING, warning),
+    ]
 
 
 @pytest.mark.parametrize(
@@ -316,7 +318,9 @@ def test_validate_optional_sensible_regex_at_top_level(caplog, regex, warning):
     }
     cfgv.validate(config_obj, CONFIG_SCHEMA)
 
-    assert caplog.record_tuples == [('pre_commit', logging.WARNING, warning)]
+    assert caplog.record_tuples == [
+        ('before_commit', logging.WARNING, warning),
+    ]
 
 
 @pytest.mark.parametrize('fn', (validate_config_main, validate_manifest_main))

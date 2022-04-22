@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from pre_commit.meta_hooks import check_useless_excludes
-from pre_commit.util import cmd_output
-
 from before_commit import git
+from before_commit.meta_hooks import check_useless_excludes
+from before_commit.util import cmd_output
 from testing.fixtures import add_config_to_repo
 from testing.fixtures import make_config_from_repo
 from testing.fixtures import make_repo

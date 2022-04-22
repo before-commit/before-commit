@@ -6,11 +6,11 @@ import shutil
 import sys
 
 import pytest
-from pre_commit.envcontext import envcontext
-from pre_commit.envcontext import Var
-from pre_commit.util import make_executable
 
 from before_commit import parse_shebang
+from before_commit.envcontext import envcontext
+from before_commit.envcontext import Var
+from before_commit.util import make_executable
 
 
 def _echo_exe() -> str:

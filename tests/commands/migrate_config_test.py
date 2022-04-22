@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from pre_commit.commands.migrate_config import migrate_config
-
 import before_commit.constants as C
+from before_commit.commands.migrate_config import migrate_config
 
 
 def test_migrate_config_normal_format(tmpdir, capsys):

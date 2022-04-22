@@ -8,20 +8,20 @@ from typing import MutableMapping
 from unittest import mock
 
 import pytest
-from pre_commit.commands.install_uninstall import install
-from pre_commit.commands.run import _compute_cols
-from pre_commit.commands.run import _full_msg
-from pre_commit.commands.run import _get_skips
-from pre_commit.commands.run import _has_unmerged_paths
-from pre_commit.commands.run import _start_msg
-from pre_commit.commands.run import Classifier
-from pre_commit.commands.run import filter_by_include_exclude
-from pre_commit.commands.run import run
-from pre_commit.util import cmd_output
-from pre_commit.util import make_executable
 
 import before_commit.constants as C
 from before_commit import color
+from before_commit.commands.install_uninstall import install
+from before_commit.commands.run import _compute_cols
+from before_commit.commands.run import _full_msg
+from before_commit.commands.run import _get_skips
+from before_commit.commands.run import _has_unmerged_paths
+from before_commit.commands.run import _start_msg
+from before_commit.commands.run import Classifier
+from before_commit.commands.run import filter_by_include_exclude
+from before_commit.commands.run import run
+from before_commit.util import cmd_output
+from before_commit.util import make_executable
 from testing.auto_namedtuple import auto_namedtuple
 from testing.fixtures import add_config_to_repo
 from testing.fixtures import git_dir
@@ -684,7 +684,7 @@ def test_aliased_hook_run(cap_out, store, aliased_repo):
 def test_non_ascii_hook_id(repo_with_passing_hook, tempdir_factory):
     with cwd(repo_with_passing_hook):
         _, stdout, _ = cmd_output_mocked_pre_commit_home(
-            sys.executable, '-m', 'pre_commit.main', 'run', '☃',
+            sys.executable, '-m', 'before_commit.main', 'run', '☃',
             retcode=None, tempdir_factory=tempdir_factory,
         )
         assert 'UnicodeDecodeError' not in stdout
@@ -827,7 +827,7 @@ def test_local_hook_passes(cap_out, store, repo_with_passing_hook):
             {
                 'id': 'identity-copy',
                 'name': 'identity-copy',
-                'entry': '{} -m pre_commit.meta_hooks.identity'.format(
+                'entry': '{} -m before_commit.meta_hooks.identity'.format(
                     shlex.quote(sys.executable),
                 ),
                 'language': 'system',
@@ -943,7 +943,7 @@ def test_files_running_subdir(repo_with_passing_hook, tempdir_factory):
         with cwd('subdir'):
             # Use subprocess to demonstrate behaviour in main
             _, stdout, _ = cmd_output_mocked_pre_commit_home(
-                sys.executable, '-m', 'pre_commit.main', 'run', '-v',
+                sys.executable, '-m', 'before_commit.main', 'run', '-v',
                 # Files relative to where we are (#339)
                 '--files', 'foo.py',
                 tempdir_factory=tempdir_factory,
@@ -1057,8 +1057,8 @@ def test_classifier_empty_types_or(tmpdir):
 def some_filenames():
     return (
         '.pre-commit-hooks.yaml',
-        'pre_commit/git.py',
-        'pre_commit/main.py',
+        'before_commit/git.py',
+        'before_commit/main.py',
     )
 
 
@@ -1066,8 +1066,8 @@ def test_include_exclude_base_case(some_filenames):
     ret = filter_by_include_exclude(some_filenames, '', '^$')
     assert ret == [
         '.pre-commit-hooks.yaml',
-        'pre_commit/git.py',
-        'pre_commit/main.py',
+        'before_commit/git.py',
+        'before_commit/main.py',
     ]
 
 
@@ -1080,7 +1080,7 @@ def test_matches_broken_symlink(tmpdir):
 
 def test_include_exclude_total_match(some_filenames):
     ret = filter_by_include_exclude(some_filenames, r'^.*\.py$', '^$')
-    assert ret == ['pre_commit/git.py', 'pre_commit/main.py']
+    assert ret == ['before_commit/git.py', 'before_commit/main.py']
 
 
 def test_include_exclude_does_search_instead_of_match(some_filenames):
@@ -1100,7 +1100,7 @@ def test_args_hook_only(cap_out, store, repo_with_passing_hook):
             {
                 'id': 'identity-copy',
                 'name': 'identity-copy',
-                'entry': '{} -m pre_commit.meta_hooks.identity'.format(
+                'entry': '{} -m before_commit.meta_hooks.identity'.format(
                     shlex.quote(sys.executable),
                 ),
                 'language': 'system',

@@ -5,9 +5,9 @@ from unittest import mock
 
 import pytest
 
-from pre_commit.envcontext import envcontext
-from pre_commit.envcontext import UNSET
-from pre_commit.envcontext import Var
+from before_commit.envcontext import envcontext
+from before_commit.envcontext import UNSET
+from before_commit.envcontext import Var
 
 
 def _test(*, before, patch, expected):

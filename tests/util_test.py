@@ -6,15 +6,15 @@ import subprocess
 
 import pytest
 
-from pre_commit.util import CalledProcessError
-from pre_commit.util import clean_path_on_failure
-from pre_commit.util import cmd_output
-from pre_commit.util import cmd_output_b
-from pre_commit.util import cmd_output_p
-from pre_commit.util import make_executable
-from pre_commit.util import parse_version
-from pre_commit.util import rmtree
-from pre_commit.util import tmpdir
+from before_commit.util import CalledProcessError
+from before_commit.util import clean_path_on_failure
+from before_commit.util import cmd_output
+from before_commit.util import cmd_output_b
+from before_commit.util import cmd_output_p
+from before_commit.util import make_executable
+from before_commit.util import parse_version
+from before_commit.util import rmtree
+from before_commit.util import tmpdir
 
 
 def test_CalledProcessError_str():
