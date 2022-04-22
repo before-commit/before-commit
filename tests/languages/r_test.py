@@ -4,7 +4,7 @@ import os.path
 
 import pytest
 
-from pre_commit.languages import r
+from before_commit.languages import r
 from testing.fixtures import make_config_from_repo
 from testing.fixtures import make_repo
 from tests.repository_test import _get_hook_no_install

@@ -7,11 +7,11 @@ from unittest import mock
 
 import pytest
 import re_assert
-from pre_commit.errors import FatalError
-from pre_commit.store import Store
-from pre_commit.util import CalledProcessError
 
 from before_commit import error_handler
+from before_commit.errors import FatalError
+from before_commit.store import Store
+from before_commit.util import CalledProcessError
 from testing.util import cmd_output_mocked_pre_commit_home
 from testing.util import xfailif_windows
 
@@ -43,12 +43,13 @@ def test_error_handler_fatal_error(mocked_log_and_exit):
 
     pattern = re_assert.Matches(
         r'Traceback \(most recent call last\):\n'
-        r'  File ".+pre_commit.error_handler.py", line \d+, in error_handler\n'
+        r'  File ".+before_commit.error_handler.py", line \d+, '
+        r'in error_handler\n'
         r'    yield\n'
         r'  File ".+tests.error_handler_test.py", line \d+, '
         r'in test_error_handler_fatal_error\n'
         r'    raise exc\n'
-        r'(pre_commit\.errors\.)?FatalError: just a test\n',
+        r'(before_commit\.errors\.)?FatalError: just a test\n',
     )
     pattern.assert_matches(mocked_log_and_exit.call_args[0][3])
 
@@ -67,7 +68,8 @@ def test_error_handler_uncaught_error(mocked_log_and_exit):
     )
     pattern = re_assert.Matches(
         r'Traceback \(most recent call last\):\n'
-        r'  File ".+pre_commit.error_handler.py", line \d+, in error_handler\n'
+        r'  File ".+before_commit.error_handler.py", line \d+, in '
+        r'error_handler\n'
         r'    yield\n'
         r'  File ".+tests.error_handler_test.py", line \d+, '
         r'in test_error_handler_uncaught_error\n'
@@ -91,7 +93,8 @@ def test_error_handler_keyboardinterrupt(mocked_log_and_exit):
     )
     pattern = re_assert.Matches(
         r'Traceback \(most recent call last\):\n'
-        r'  File ".+pre_commit.error_handler.py", line \d+, in error_handler\n'
+        r'  File ".+before_commit.error_handler.py", line \d+, '
+        r'in error_handler\n'
         r'    yield\n'
         r'  File ".+tests.error_handler_test.py", line \d+, '
         r'in test_error_handler_keyboardinterrupt\n'
@@ -105,7 +108,7 @@ def test_log_and_exit(cap_out, mock_store_dir):
     tb = (
         'Traceback (most recent call last):\n'
         '  File "<stdin>", line 2, in <module>\n'
-        'pre_commit.errors.FatalError: hai\n'
+        'before_commit.errors.FatalError: hai\n'
     )
 
     with pytest.raises(SystemExit) as excinfo:
@@ -141,7 +144,7 @@ def test_log_and_exit(cap_out, mock_store_dir):
             r'```\n'
             r'Traceback \(most recent call last\):\n'
             r'  File "<stdin>", line 2, in <module>\n'
-            r'pre_commit\.errors\.FatalError: hai\n'
+            r'before_commit\.errors\.FatalError: hai\n'
             r'```\n',
         )
         pattern.assert_matches(logged)
@@ -174,7 +177,7 @@ def test_error_handler_no_tty(tempdir_factory):
     ret, out, _ = cmd_output_mocked_pre_commit_home(
         sys.executable,
         '-c',
-        'from pre_commit.error_handler import error_handler\n'
+        'from before_commit.error_handler import error_handler\n'
         'with error_handler():\n'
         '    raise ValueError("\\u2603")\n',
         retcode=3,

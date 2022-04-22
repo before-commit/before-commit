@@ -6,14 +6,14 @@ import shutil
 
 from cfgv import apply_defaults
 from cfgv import validate
-from pre_commit.clientlib import CONFIG_SCHEMA
-from pre_commit.clientlib import load_manifest
-from pre_commit.util import cmd_output
-from pre_commit.util import yaml_dump
-from pre_commit.util import yaml_load
 
 import before_commit.constants as C
 from before_commit import git
+from before_commit.clientlib import CONFIG_SCHEMA
+from before_commit.clientlib import load_manifest
+from before_commit.util import cmd_output
+from before_commit.util import yaml_dump
+from before_commit.util import yaml_load
 from testing.util import get_resource_path
 from testing.util import git_commit
 

@@ -73,7 +73,7 @@ def main() -> int:
         _msg('populating wheels...')
         _exit_if_retv(
             'podman', 'run', '--rm', '--volume', f'{wheeldir}:/wheels:rw', IMG,
-            'pip', 'wheel', f'pre_commit=={args.version}', 'setuptools',
+            'pip', 'wheel', f'before_commit=={args.version}', 'setuptools',
             '--wheel-dir', '/wheels',
         )
 
@@ -88,8 +88,8 @@ def main() -> int:
         _add_shim(tmpdir)
 
         _msg('copying file_lock.py...')
-        file_lock_py = os.path.join(HERE, '../../pre_commit/file_lock.py')
-        file_lock_py_dest = os.path.join(tmpdir, 'pre_commit/file_lock.py')
+        file_lock_py = os.path.join(HERE, '../../before_commit/file_lock.py')
+        file_lock_py_dest = os.path.join(tmpdir, 'before_commit/file_lock.py')
         os.makedirs(os.path.dirname(file_lock_py_dest))
         shutil.copy(file_lock_py, file_lock_py_dest)
 

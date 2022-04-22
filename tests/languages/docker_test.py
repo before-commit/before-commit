@@ -9,8 +9,8 @@ from unittest import mock
 
 import pytest
 
-from pre_commit.languages import docker
-from pre_commit.util import CalledProcessError
+from before_commit.languages import docker
+from before_commit.util import CalledProcessError
 
 DOCKER_CGROUP_EXAMPLE = b'''\
 12:hugetlb:/docker/c33988ec7651ebc867cb24755eaf637a6734088bc7eef59d5799293a9e5450f7

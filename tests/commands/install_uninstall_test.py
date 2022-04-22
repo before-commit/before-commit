@@ -4,19 +4,19 @@ import os.path
 import re
 
 import re_assert
-from pre_commit.commands.install_uninstall import CURRENT_HASH
-from pre_commit.commands.install_uninstall import install
-from pre_commit.commands.install_uninstall import install_hooks
-from pre_commit.commands.install_uninstall import is_our_script
-from pre_commit.commands.install_uninstall import PRIOR_HASHES
-from pre_commit.commands.install_uninstall import uninstall
-from pre_commit.parse_shebang import find_executable
-from pre_commit.util import cmd_output
-from pre_commit.util import make_executable
-from pre_commit.util import resource_text
 
 import before_commit.constants as C
 from before_commit import git
+from before_commit.commands.install_uninstall import CURRENT_HASH
+from before_commit.commands.install_uninstall import install
+from before_commit.commands.install_uninstall import install_hooks
+from before_commit.commands.install_uninstall import is_our_script
+from before_commit.commands.install_uninstall import PRIOR_HASHES
+from before_commit.commands.install_uninstall import uninstall
+from before_commit.parse_shebang import find_executable
+from before_commit.util import cmd_output
+from before_commit.util import make_executable
+from before_commit.util import resource_text
 from testing.fixtures import add_config_to_repo
 from testing.fixtures import git_dir
 from testing.fixtures import make_consuming_repo
@@ -32,7 +32,7 @@ def test_is_not_script():
 
 
 def test_is_script():
-    assert is_our_script('pre_commit/resources/hook-tmpl')
+    assert is_our_script('before_commit/resources/hook-tmpl')
 
 
 def test_is_previous_pre_commit(tmpdir):
@@ -447,13 +447,14 @@ def test_replace_old_commit_script(tempdir_factory, store):
 
 
 def test_uninstall_doesnt_remove_not_our_hooks(in_git_dir):
-    pre_commit = in_git_dir.join('.git/hooks').ensure_dir().join('pre-commit')
-    pre_commit.write('#!/usr/bin/env bash\necho 1\n')
-    make_executable(pre_commit.strpath)
+    before_commit = in_git_dir.join('.git/hooks').ensure_dir() \
+        .join('pre-commit')
+    before_commit.write('#!/usr/bin/env bash\necho 1\n')
+    make_executable(before_commit.strpath)
 
     assert uninstall(hook_types=['pre-commit']) == 0
 
-    assert pre_commit.exists()
+    assert before_commit.exists()
 
 
 PRE_INSTALLED = re_assert.Matches(

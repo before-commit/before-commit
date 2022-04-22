@@ -28,7 +28,7 @@ def main() -> int:
         ]
         for wheel in sorted(os.listdir(WHEELDIR)):
             sys.path.append(os.path.join(WHEELDIR, wheel))
-        if args.m == 'pre_commit' or args.m.startswith('pre_commit.'):
+        if args.m == 'before_commit' or args.m.startswith('before_commit.'):
             sys.executable = EXE
         sys.argv[1:] = rest
         runpy.run_module(args.m, run_name='__main__', alter_sys=True)

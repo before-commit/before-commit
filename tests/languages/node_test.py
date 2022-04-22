@@ -7,13 +7,13 @@ import sys
 from unittest import mock
 
 import pytest
-from pre_commit.languages import node
-from pre_commit.prefix import Prefix
-from pre_commit.util import cmd_output
 
 import before_commit.constants as C
 from before_commit import envcontext
 from before_commit import parse_shebang
+from before_commit.languages import node
+from before_commit.prefix import Prefix
+from before_commit.util import cmd_output
 from testing.util import xfailif_windows
 
 

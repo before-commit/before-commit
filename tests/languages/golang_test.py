@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from pre_commit.languages.golang import guess_go_dir
+from before_commit.languages.golang import guess_go_dir
 
 
 @pytest.mark.parametrize(

@@ -7,13 +7,13 @@ import os.path
 from unittest import mock
 
 import pytest
-from pre_commit.envcontext import envcontext
-from pre_commit.logging_handler import logging_handler
-from pre_commit.store import Store
-from pre_commit.util import cmd_output
-from pre_commit.util import make_executable
 
 from before_commit import output
+from before_commit.envcontext import envcontext
+from before_commit.logging_handler import logging_handler
+from before_commit.store import Store
+from before_commit.util import cmd_output
+from before_commit.util import make_executable
 from testing.fixtures import git_dir
 from testing.fixtures import make_consuming_repo
 from testing.fixtures import write_config
@@ -184,7 +184,7 @@ def failing_prepare_commit_msg_repo(tempdir_factory):
 
 @pytest.fixture(autouse=True, scope='session')
 def dont_write_to_home_directory():
-    """pre_commit.store.Store will by default write to the home directory
+    """before_commit.store.Store will by default write to the home directory
     We'll mock out `Store.get_default_directory` to raise invariantly so we
     don't construct a `Store` object that writes to our home directory.
     """
@@ -223,7 +223,7 @@ def store(tempdir_factory):
 
 @pytest.fixture
 def log_info_mock():
-    with mock.patch.object(logging.getLogger('pre_commit'), 'info') as mck:
+    with mock.patch.object(logging.getLogger('before_commit'), 'info') as mck:
         yield mck
 
 

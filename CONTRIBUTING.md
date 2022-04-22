@@ -80,7 +80,7 @@ windows, macos) but it's ok to skip one or more platforms (for example, swift
 doesn't run on windows).
 
 When writing your new language, it's often useful to look at other examples in
-the `pre_commit/languages` directory.
+the `before_commit/languages` directory.
 
 It might also be useful to look at a recent pull request which added a
 language, for example:

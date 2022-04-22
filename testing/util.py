@@ -5,11 +5,11 @@ import os.path
 import subprocess
 
 import pytest
-from pre_commit.util import CalledProcessError
-from pre_commit.util import cmd_output
-from pre_commit.util import cmd_output_b
 
 from before_commit import parse_shebang
+from before_commit.util import CalledProcessError
+from before_commit.util import cmd_output
+from before_commit.util import cmd_output_b
 from testing.auto_namedtuple import auto_namedtuple
 
 

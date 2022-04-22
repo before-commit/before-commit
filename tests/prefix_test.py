@@ -4,7 +4,7 @@ import os.path
 
 import pytest
 
-from pre_commit.prefix import Prefix
+from before_commit.prefix import Prefix
 
 
 def norm_slash(*args):
