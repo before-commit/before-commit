@@ -1,15 +1,18 @@
 from __future__ import annotations
 
+from typing import Callable
 from typing import Sequence
 
 from before_commit.hook import Hook
 from before_commit.languages import helpers
 from before_commit.languages.docker import docker_cmd
+from before_commit.prefix import Prefix
 
-ENVIRONMENT_DIR = None
-get_default_version = helpers.basic_get_default_version
-healthy = helpers.basic_healthy
-install_environment = helpers.no_install
+ENVIRONMENT_DIR: str | None = None
+get_default_version: Callable[[], str] = helpers.basic_get_default_version
+healthy: Callable[[Prefix, str], bool] = helpers.basic_healthy
+install_environment: Callable[[Prefix, str, Sequence[str]], None] = \
+    helpers.no_install
 
 
 def run_hook(

@@ -21,7 +21,7 @@ from before_commit.util import cmd_output
 from before_commit.util import cmd_output_b
 from before_commit.util import rmtree
 
-ENVIRONMENT_DIR = 'node_env'
+ENVIRONMENT_DIR: str = 'node_env'
 
 
 @functools.lru_cache(maxsize=1)
