@@ -42,7 +42,7 @@ class Language(NamedTuple):
 
 
 # TODO: back to modules + Protocol: https://github.com/python/mypy/issues/5018
-languages = {
+languages: dict[str, Language] = {
     # BEGIN GENERATED (testing/gen-languages-all)
     'conda': Language(name='conda', ENVIRONMENT_DIR=conda.ENVIRONMENT_DIR, get_default_version=conda.get_default_version, healthy=conda.healthy, install_environment=conda.install_environment, run_hook=conda.run_hook),  # noqa: E501
     'coursier': Language(name='coursier', ENVIRONMENT_DIR=coursier.ENVIRONMENT_DIR, get_default_version=coursier.get_default_version, healthy=coursier.healthy, install_environment=coursier.install_environment, run_hook=coursier.run_hook),  # noqa: E501
