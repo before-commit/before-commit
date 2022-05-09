@@ -10,7 +10,8 @@ from before_commit.prefix import Prefix
 
 ENVIRONMENT_DIR: str | None = None
 get_default_version: Callable[[], str] = helpers.basic_get_default_version
-healthy: Callable[[Prefix, str], bool] = helpers.basic_healthy
+health_check: Callable[[Prefix, str], str | None] = \
+    helpers.basic_health_check
 install_environment: Callable[[Prefix, str, Sequence[str]], None] = \
     helpers.no_install
 
