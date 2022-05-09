@@ -82,7 +82,8 @@ def test_unhealthy_if_system_node_goes_missing(tmpdir):
 
         node_bin.remove()
         ret = node.health_check(prefix, 'system')
-        assert ret == '`node --version` returned 127'
+        assert ret == '`node --version` returned 127' \
+            or ret == '`node --version` returned 126'  # macOS-specific
 
 
 @xfailif_windows  # pragma: win32 no cover
