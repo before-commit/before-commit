@@ -6,7 +6,6 @@ import sys
 from typing import Any
 from unittest import mock
 
-import cfgv
 import pytest
 import re_assert
 
@@ -14,6 +13,8 @@ import before_commit.constants as C
 from before_commit import git
 from before_commit.clientlib import CONFIG_SCHEMA
 from before_commit.clientlib import load_manifest
+from before_commit.config import apply_defaults
+from before_commit.config import validate
 from before_commit.envcontext import envcontext
 from before_commit.hook import Hook
 from before_commit.languages import golang
@@ -50,8 +51,8 @@ def _hook_run(hook, filenames, color):
 
 def _get_hook_no_install(repo_config, store, hook_id):
     config = {'repos': [repo_config]}
-    config = cfgv.validate(config, CONFIG_SCHEMA)
-    config = cfgv.apply_defaults(config, CONFIG_SCHEMA)
+    config = validate(config, CONFIG_SCHEMA)
+    config = apply_defaults(config, CONFIG_SCHEMA)
     hooks = all_hooks(config, store)
     hook, = (hook for hook in hooks if hook.id == hook_id)
     return hook

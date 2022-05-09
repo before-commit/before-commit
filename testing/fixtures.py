@@ -4,13 +4,12 @@ import contextlib
 import os.path
 import shutil
 
-from cfgv import apply_defaults
-from cfgv import validate
-
 import before_commit.constants as C
 from before_commit import git
 from before_commit.clientlib import CONFIG_SCHEMA
 from before_commit.clientlib import load_manifest
+from before_commit.config import apply_defaults
+from before_commit.config import validate
 from before_commit.util import cmd_output
 from before_commit.util import yaml_dump
 from before_commit.util import yaml_load

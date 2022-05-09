@@ -3,7 +3,6 @@ from __future__ import annotations
 import logging
 import re
 
-import cfgv
 import pytest
 
 import before_commit.constants as C
@@ -17,20 +16,25 @@ from before_commit.clientlib import META_HOOK_DICT
 from before_commit.clientlib import MigrateShaToRev
 from before_commit.clientlib import validate_config_main
 from before_commit.clientlib import validate_manifest_main
+from before_commit.config import apply_defaults
+from before_commit.config import Optional
+from before_commit.config import validate
+from before_commit.config import ValidationError
+from before_commit.config import WarnAdditionalKeys
 from testing.fixtures import sample_local_config
 
 
 def is_valid_according_to_schema(obj, obj_schema):
     try:
-        cfgv.validate(obj, obj_schema)
+        validate(obj, obj_schema)
         return True
-    except cfgv.ValidationError:
+    except ValidationError:
         return False
 
 
 @pytest.mark.parametrize('value', ('definitely-not-a-tag', 'fiel'))
 def test_check_type_tag_failures(value):
-    with pytest.raises(cfgv.ValidationError):
+    with pytest.raises(ValidationError):
         check_type_tag(value)
 
 
@@ -93,13 +97,13 @@ def test_config_valid(config_obj, expected):
 
 def test_local_hooks_with_rev_fails():
     config_obj = {'repos': [dict(sample_local_config(), rev='foo')]}
-    with pytest.raises(cfgv.ValidationError):
-        cfgv.validate(config_obj, CONFIG_SCHEMA)
+    with pytest.raises(ValidationError):
+        validate(config_obj, CONFIG_SCHEMA)
 
 
 def test_config_with_local_hooks_definition_passes():
     config_obj = {'repos': [sample_local_config()]}
-    cfgv.validate(config_obj, CONFIG_SCHEMA)
+    validate(config_obj, CONFIG_SCHEMA)
 
 
 def test_config_schema_does_not_contain_defaults():
@@ -107,7 +111,7 @@ def test_config_schema_does_not_contain_defaults():
     will clobber potentially useful values in the backing manifest. #227
     """
     for item in CONFIG_HOOK_DICT.items:
-        assert not isinstance(item, cfgv.Optional)
+        assert not isinstance(item, Optional)
 
 
 def test_validate_manifest_main_ok():
@@ -187,13 +191,13 @@ def test_ci_map_key_allowed_at_top_level(caplog):
         'ci': {'skip': ['foo']},
         'repos': [{'repo': 'meta', 'hooks': [{'id': 'identity'}]}],
     }
-    cfgv.validate(cfg, CONFIG_SCHEMA)
+    validate(cfg, CONFIG_SCHEMA)
     assert not caplog.record_tuples
 
 
 def test_ci_key_must_be_map():
-    with pytest.raises(cfgv.ValidationError):
-        cfgv.validate({'ci': 'invalid', 'repos': []}, CONFIG_SCHEMA)
+    with pytest.raises(ValidationError):
+        validate({'ci': 'invalid', 'repos': []}, CONFIG_SCHEMA)
 
 
 @pytest.mark.parametrize(
@@ -212,7 +216,7 @@ def test_warn_mutable_rev_ok(caplog, rev):
         'rev': rev,
         'hooks': [{'id': 'flake8'}],
     }
-    cfgv.validate(config_obj, CONFIG_REPO_DICT)
+    validate(config_obj, CONFIG_REPO_DICT)
 
     assert caplog.record_tuples == []
 
@@ -233,7 +237,7 @@ def test_warn_mutable_rev_invalid(caplog, rev):
         'rev': rev,
         'hooks': [{'id': 'flake8'}],
     }
-    cfgv.validate(config_obj, CONFIG_REPO_DICT)
+    validate(config_obj, CONFIG_REPO_DICT)
 
     assert caplog.record_tuples == [
         (
@@ -257,8 +261,8 @@ def test_warn_mutable_rev_conditional():
         'hooks': [{'id': 'flake8'}],
     }
 
-    with pytest.raises(cfgv.ValidationError):
-        cfgv.validate(config_obj, CONFIG_REPO_DICT)
+    with pytest.raises(ValidationError):
+        validate(config_obj, CONFIG_REPO_DICT)
 
 
 @pytest.mark.parametrize(
@@ -291,7 +295,7 @@ def test_validate_optional_sensible_regex_at_hook(caplog, regex, warning):
         'id': 'flake8',
         'files': regex,
     }
-    cfgv.validate(config_obj, CONFIG_HOOK_DICT)
+    validate(config_obj, CONFIG_HOOK_DICT)
 
     assert caplog.record_tuples == [
         ('before_commit', logging.WARNING, warning),
@@ -328,7 +332,7 @@ def test_validate_optional_sensible_regex_at_top_level(caplog, regex, warning):
         'files': regex,
         'repos': [],
     }
-    cfgv.validate(config_obj, CONFIG_SCHEMA)
+    validate(config_obj, CONFIG_SCHEMA)
 
     assert caplog.record_tuples == [
         ('before_commit', logging.WARNING, warning),
@@ -402,7 +406,7 @@ def test_migrate_sha_to_rev_ok(dct):
 
 
 def test_migrate_sha_to_rev_dont_specify_both():
-    with pytest.raises(cfgv.ValidationError) as excinfo:
+    with pytest.raises(ValidationError) as excinfo:
         MigrateShaToRev().check({'repo': 'a', 'sha': 'b', 'rev': 'c'})
     msg, = excinfo.value.args
     assert msg == 'Cannot specify both sha and rev'
@@ -416,7 +420,7 @@ def test_migrate_sha_to_rev_dont_specify_both():
     ),
 )
 def test_migrate_sha_to_rev_conditional_check_failures(dct):
-    with pytest.raises(cfgv.ValidationError):
+    with pytest.raises(ValidationError):
         MigrateShaToRev().check(dct)
 
 
@@ -451,13 +455,13 @@ def test_migrate_to_sha_ok():
     ),
 )
 def test_meta_hook_invalid(config_repo):
-    with pytest.raises(cfgv.ValidationError):
-        cfgv.validate(config_repo, CONFIG_REPO_DICT)
+    with pytest.raises(ValidationError):
+        validate(config_repo, CONFIG_REPO_DICT)
 
 
 def test_meta_check_hooks_apply_only_at_top_level():
     cfg = {'id': 'check-hooks-apply'}
-    cfg = cfgv.apply_defaults(cfg, META_HOOK_DICT)
+    cfg = apply_defaults(cfg, META_HOOK_DICT)
 
     files_re = re.compile(cfg['files'])
     assert files_re.search('.pre-commit-config.yaml')
@@ -474,14 +478,14 @@ def test_meta_check_hooks_apply_only_at_top_level():
     ),
 )
 def test_default_language_version_invalid(mapping):
-    with pytest.raises(cfgv.ValidationError):
-        cfgv.validate(mapping, DEFAULT_LANGUAGE_VERSION)
+    with pytest.raises(ValidationError):
+        validate(mapping, DEFAULT_LANGUAGE_VERSION)
 
 
 def test_minimum_pre_commit_version_failing():
-    with pytest.raises(cfgv.ValidationError) as excinfo:
+    with pytest.raises(ValidationError) as excinfo:
         cfg = {'repos': [], 'minimum_pre_commit_version': '999'}
-        cfgv.validate(cfg, CONFIG_SCHEMA)
+        validate(cfg, CONFIG_SCHEMA)
     assert str(excinfo.value) == (
         f'\n'
         f'==> At Config()\n'
@@ -493,13 +497,13 @@ def test_minimum_pre_commit_version_failing():
 
 def test_minimum_pre_commit_version_passing():
     cfg = {'repos': [], 'minimum_pre_commit_version': '0'}
-    cfgv.validate(cfg, CONFIG_SCHEMA)
+    validate(cfg, CONFIG_SCHEMA)
 
 
 @pytest.mark.parametrize('schema', (CONFIG_SCHEMA, CONFIG_REPO_DICT))
 def test_warn_additional(schema):
     allowed_keys = {item.key for item in schema.items if hasattr(item, 'key')}
     warn_additional, = (
-        x for x in schema.items if isinstance(x, cfgv.WarnAdditionalKeys)
+        x for x in schema.items if isinstance(x, WarnAdditionalKeys)
     )
     assert allowed_keys == set(warn_additional.keys)

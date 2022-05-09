@@ -9,13 +9,35 @@ import sys
 from typing import Any
 from typing import Sequence
 
-import cfgv
 from identify.identify import ALL_TAGS
 
 import before_commit.constants as C
 from before_commit.color import add_color_option
 from before_commit.commands.validate_config import validate_config
 from before_commit.commands.validate_manifest import validate_manifest
+from before_commit.config import Array
+from before_commit.config import check_and
+from before_commit.config import check_any
+from before_commit.config import check_array
+from before_commit.config import check_bool
+from before_commit.config import check_one_of
+from before_commit.config import check_regex
+from before_commit.config import check_string
+from before_commit.config import check_type
+from before_commit.config import Conditional
+from before_commit.config import ConditionalOptional
+from before_commit.config import ConditionalRecurse
+from before_commit.config import load_from_filename
+from before_commit.config import Map
+from before_commit.config import NoAdditionalKeys
+from before_commit.config import NotIn
+from before_commit.config import Optional
+from before_commit.config import OptionalNoDefault
+from before_commit.config import OptionalRecurse
+from before_commit.config import Required
+from before_commit.config import RequiredRecurse
+from before_commit.config import ValidationError
+from before_commit.config import WarnAdditionalKeys
 from before_commit.errors import FatalError
 from before_commit.languages.all import all_languages
 from before_commit.logging_handler import logging_handler
@@ -24,12 +46,12 @@ from before_commit.util import yaml_load
 
 logger = logging.getLogger('before_commit')
 
-check_string_regex = cfgv.check_and(cfgv.check_string, cfgv.check_regex)
+check_string_regex = check_and(check_string, check_regex)
 
 
 def check_type_tag(tag: str) -> None:
     if tag not in ALL_TAGS:
-        raise cfgv.ValidationError(
+        raise ValidationError(
             f'Type tag {tag!r} is not recognized.  '
             f'Try upgrading identify and pre-commit?',
         )
@@ -37,7 +59,7 @@ def check_type_tag(tag: str) -> None:
 
 def check_min_version(version: str) -> None:
     if parse_version(version) > parse_version(C.VERSION):
-        raise cfgv.ValidationError(
+        raise ValidationError(
             f'pre-commit version {version} is required but version '
             f'{C.VERSION} is installed.  '
             f'Perhaps run `pip install --upgrade pre-commit`.',
@@ -52,37 +74,37 @@ def _make_argparser(filenames_help: str) -> argparse.ArgumentParser:
     return parser
 
 
-MANIFEST_HOOK_DICT = cfgv.Map(
+MANIFEST_HOOK_DICT = Map(
     'Hook', 'id',
 
-    cfgv.Required('id', cfgv.check_string),
-    cfgv.Required('name', cfgv.check_string),
-    cfgv.Required('entry', cfgv.check_string),
-    cfgv.Required('language', cfgv.check_one_of(all_languages)),
-    cfgv.Optional('alias', cfgv.check_string, ''),
+    Required('id', check_string),
+    Required('name', check_string),
+    Required('entry', check_string),
+    Required('language', check_one_of(all_languages)),
+    Optional('alias', check_string, ''),
 
-    cfgv.Optional('files', check_string_regex, ''),
-    cfgv.Optional('exclude', check_string_regex, '^$'),
-    cfgv.Optional('types', cfgv.check_array(check_type_tag), ['file']),
-    cfgv.Optional('types_or', cfgv.check_array(check_type_tag), []),
-    cfgv.Optional('exclude_types', cfgv.check_array(check_type_tag), []),
+    Optional('files', check_string_regex, ''),
+    Optional('exclude', check_string_regex, '^$'),
+    Optional('types', check_array(check_type_tag), ['file']),
+    Optional('types_or', check_array(check_type_tag), []),
+    Optional('exclude_types', check_array(check_type_tag), []),
 
-    cfgv.Optional(
-        'additional_dependencies', cfgv.check_array(cfgv.check_string), [],
+    Optional(
+        'additional_dependencies', check_array(check_string), [],
     ),
-    cfgv.Optional('args', cfgv.check_array(cfgv.check_string), []),
-    cfgv.Optional('always_run', cfgv.check_bool, False),
-    cfgv.Optional('fail_fast', cfgv.check_bool, False),
-    cfgv.Optional('pass_filenames', cfgv.check_bool, True),
-    cfgv.Optional('description', cfgv.check_string, ''),
-    cfgv.Optional('language_version', cfgv.check_string, C.DEFAULT),
-    cfgv.Optional('log_file', cfgv.check_string, ''),
-    cfgv.Optional('minimum_pre_commit_version', cfgv.check_string, '0'),
-    cfgv.Optional('require_serial', cfgv.check_bool, False),
-    cfgv.Optional('stages', cfgv.check_array(cfgv.check_one_of(C.STAGES)), []),
-    cfgv.Optional('verbose', cfgv.check_bool, False),
+    Optional('args', check_array(check_string), []),
+    Optional('always_run', check_bool, False),
+    Optional('fail_fast', check_bool, False),
+    Optional('pass_filenames', check_bool, True),
+    Optional('description', check_string, ''),
+    Optional('language_version', check_string, C.DEFAULT),
+    Optional('log_file', check_string, ''),
+    Optional('minimum_pre_commit_version', check_string, '0'),
+    Optional('require_serial', check_bool, False),
+    Optional('stages', check_array(check_one_of(C.STAGES)), []),
+    Optional('verbose', check_bool, False),
 )
-MANIFEST_SCHEMA = cfgv.Array(MANIFEST_HOOK_DICT)
+MANIFEST_SCHEMA = Array(MANIFEST_HOOK_DICT)
 
 
 class InvalidManifestError(FatalError):
@@ -90,7 +112,7 @@ class InvalidManifestError(FatalError):
 
 
 load_manifest = functools.partial(
-    cfgv.load_from_filename,
+    load_from_filename,
     schema=MANIFEST_SCHEMA,
     load_strategy=yaml_load,
     exc_tp=InvalidManifestError,
@@ -114,8 +136,8 @@ LOCAL = 'local'
 META = 'meta'
 
 
-# should inherit from cfgv.Conditional if sha support is dropped
-class WarnMutableRev(cfgv.ConditionalOptional):
+# should inherit from Conditional if sha support is dropped
+class WarnMutableRev(ConditionalOptional):
     def check(self, dct: dict[str, Any]) -> None:
         super().check(dct)
 
@@ -134,7 +156,7 @@ class WarnMutableRev(cfgv.ConditionalOptional):
                 )
 
 
-class OptionalSensibleRegexAtHook(cfgv.OptionalNoDefault):
+class OptionalSensibleRegexAtHook(OptionalNoDefault):
     def check(self, dct: dict[str, Any]) -> None:
         super().check(dct)
 
@@ -153,7 +175,7 @@ class OptionalSensibleRegexAtHook(cfgv.OptionalNoDefault):
                 )
 
 
-class OptionalSensibleRegexAtTop(cfgv.OptionalNoDefault):
+class OptionalSensibleRegexAtTop(OptionalNoDefault):
     def check(self, dct: dict[str, Any]) -> None:
         super().check(dct)
 
@@ -175,11 +197,11 @@ class MigrateShaToRev:
     key = 'rev'
 
     @staticmethod
-    def _cond(key: str) -> cfgv.Conditional:
-        return cfgv.Conditional(
-            key, cfgv.check_string,
+    def _cond(key: str) -> Conditional:
+        return Conditional(
+            key, check_string,
             condition_key='repo',
-            condition_value=cfgv.NotIn(LOCAL, META),
+            condition_value=NotIn(LOCAL, META),
             ensure_absent=True,
         )
 
@@ -188,7 +210,7 @@ class MigrateShaToRev:
             self._cond('rev').check(dct)
             self._cond('sha').check(dct)
         elif 'sha' in dct and 'rev' in dct:
-            raise cfgv.ValidationError('Cannot specify both sha and rev')
+            raise ValidationError('Cannot specify both sha and rev')
         elif 'sha' in dct:
             self._cond('sha').check(dct)
         else:
@@ -198,7 +220,7 @@ class MigrateShaToRev:
         if 'sha' in dct:
             dct['rev'] = dct.pop('sha')
 
-    remove_default = cfgv.Required.remove_default
+    remove_default = Required.remove_default
 
 
 def _entry(modname: str) -> str:
@@ -252,112 +274,112 @@ _meta = (
 )
 
 
-class NotAllowed(cfgv.OptionalNoDefault):
+class NotAllowed(OptionalNoDefault):
     def check(self, dct: dict[str, Any]) -> None:
         if self.key in dct:
-            raise cfgv.ValidationError(f'{self.key!r} cannot be overridden')
+            raise ValidationError(f'{self.key!r} cannot be overridden')
 
 
-META_HOOK_DICT = cfgv.Map(
+META_HOOK_DICT = Map(
     'Hook', 'id',
-    cfgv.Required('id', cfgv.check_string),
-    cfgv.Required('id', cfgv.check_one_of(tuple(k for k, _ in _meta))),
+    Required('id', check_string),
+    Required('id', check_one_of(tuple(k for k, _ in _meta))),
     # language must be system
-    cfgv.Optional('language', cfgv.check_one_of({'system'}), 'system'),
+    Optional('language', check_one_of({'system'}), 'system'),
     # entry cannot be overridden
-    NotAllowed('entry', cfgv.check_any),
+    NotAllowed('entry', check_any),
     *(
         # default to the hook definition for the meta hooks
-        cfgv.ConditionalOptional(key, cfgv.check_any, value, 'id', hook_id)
+        ConditionalOptional(key, check_any, value, 'id', hook_id)
         for hook_id, values in _meta
         for key, value in values
     ),
     *(
         # default to the "manifest" parsing
-        cfgv.OptionalNoDefault(item.key, item.check_fn)
+        OptionalNoDefault(item.key, item.check_fn)
         # these will always be defaulted above
         if item.key in {'name', 'language', 'entry'} else
         item
         for item in MANIFEST_HOOK_DICT.items
     ),
 )
-CONFIG_HOOK_DICT = cfgv.Map(
+CONFIG_HOOK_DICT = Map(
     'Hook', 'id',
 
-    cfgv.Required('id', cfgv.check_string),
+    Required('id', check_string),
 
     # All keys in manifest hook dict are valid in a config hook dict, but
     # are optional.
     # No defaults are provided here as the config is merged on top of the
     # manifest.
     *(
-        cfgv.OptionalNoDefault(item.key, item.check_fn)
+        OptionalNoDefault(item.key, item.check_fn)
         for item in MANIFEST_HOOK_DICT.items
         if item.key != 'id'
     ),
-    OptionalSensibleRegexAtHook('files', cfgv.check_string),
-    OptionalSensibleRegexAtHook('exclude', cfgv.check_string),
+    OptionalSensibleRegexAtHook('files', check_string),
+    OptionalSensibleRegexAtHook('exclude', check_string),
 )
-CONFIG_REPO_DICT = cfgv.Map(
+CONFIG_REPO_DICT = Map(
     'Repository', 'repo',
 
-    cfgv.Required('repo', cfgv.check_string),
+    Required('repo', check_string),
 
-    cfgv.ConditionalRecurse(
-        'hooks', cfgv.Array(CONFIG_HOOK_DICT),
-        'repo', cfgv.NotIn(LOCAL, META),
+    ConditionalRecurse(
+        'hooks', Array(CONFIG_HOOK_DICT),
+        'repo', NotIn(LOCAL, META),
     ),
-    cfgv.ConditionalRecurse(
-        'hooks', cfgv.Array(MANIFEST_HOOK_DICT),
+    ConditionalRecurse(
+        'hooks', Array(MANIFEST_HOOK_DICT),
         'repo', LOCAL,
     ),
-    cfgv.ConditionalRecurse(
-        'hooks', cfgv.Array(META_HOOK_DICT),
+    ConditionalRecurse(
+        'hooks', Array(META_HOOK_DICT),
         'repo', META,
     ),
 
     MigrateShaToRev(),
     WarnMutableRev(
         'rev',
-        cfgv.check_string,
+        check_string,
         '',
         'repo',
-        cfgv.NotIn(LOCAL, META),
+        NotIn(LOCAL, META),
         True,
     ),
-    cfgv.WarnAdditionalKeys(('repo', 'rev', 'hooks'), warn_unknown_keys_repo),
+    WarnAdditionalKeys(('repo', 'rev', 'hooks'), warn_unknown_keys_repo),
 )
-DEFAULT_LANGUAGE_VERSION = cfgv.Map(
+DEFAULT_LANGUAGE_VERSION = Map(
     'DefaultLanguageVersion', None,
-    cfgv.NoAdditionalKeys(all_languages),
-    *(cfgv.Optional(x, cfgv.check_string, C.DEFAULT) for x in all_languages),
+    NoAdditionalKeys(all_languages),
+    *(Optional(x, check_string, C.DEFAULT) for x in all_languages),
 )
-CONFIG_SCHEMA = cfgv.Map(
+CONFIG_SCHEMA = Map(
     'Config', None,
 
-    cfgv.RequiredRecurse('repos', cfgv.Array(CONFIG_REPO_DICT)),
-    cfgv.Optional(
+    RequiredRecurse('repos', Array(CONFIG_REPO_DICT)),
+    Optional(
         'default_install_hook_types',
-        cfgv.check_array(cfgv.check_one_of(C.HOOK_TYPES)),
+        check_array(check_one_of(C.HOOK_TYPES)),
         ['pre-commit'],
     ),
-    cfgv.OptionalRecurse(
+    OptionalRecurse(
         'default_language_version', DEFAULT_LANGUAGE_VERSION, {},
     ),
-    cfgv.Optional(
+    Optional(
         'default_stages',
-        cfgv.check_array(cfgv.check_one_of(C.STAGES)),
+        check_array(check_one_of(C.STAGES)),
         C.STAGES,
     ),
-    cfgv.Optional('files', check_string_regex, ''),
-    cfgv.Optional('exclude', check_string_regex, '^$'),
-    cfgv.Optional('fail_fast', cfgv.check_bool, False),
-    cfgv.Optional(
+    Optional('files', check_string_regex, ''),
+    Optional('exclude', check_string_regex, '^$'),
+    Optional('fail_fast', check_bool, False),
+    Optional(
         'minimum_pre_commit_version',
-        cfgv.check_and(cfgv.check_string, check_min_version),
+        check_and(check_string, check_min_version),
         '0',
     ),
-    cfgv.WarnAdditionalKeys(
+    WarnAdditionalKeys(
         (
             'repos',
             'default_install_hook_types',
@@ -371,11 +393,11 @@ CONFIG_SCHEMA = cfgv.Map(
         ),
         warn_unknown_keys_root,
     ),
-    OptionalSensibleRegexAtTop('files', cfgv.check_string),
-    OptionalSensibleRegexAtTop('exclude', cfgv.check_string),
+    OptionalSensibleRegexAtTop('files', check_string),
+    OptionalSensibleRegexAtTop('exclude', check_string),
 
     # do not warn about configuration for pre-commit.ci
-    cfgv.OptionalNoDefault('ci', cfgv.check_type(dict)),
+    OptionalNoDefault('ci', check_type(dict)),
 )
 
 
@@ -397,7 +419,7 @@ def ordered_load_normalize_legacy_config(contents: str) -> dict[str, Any]:
 
 
 load_config = functools.partial(
-    cfgv.load_from_filename,
+    load_from_filename,
     schema=CONFIG_SCHEMA,
     load_strategy=ordered_load_normalize_legacy_config,
     exc_tp=InvalidConfigError,
