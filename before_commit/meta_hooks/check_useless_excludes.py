@@ -4,13 +4,12 @@ import argparse
 import re
 from typing import Sequence
 
-from cfgv import apply_defaults
-
 import before_commit.constants as C
 from before_commit import git
 from before_commit.clientlib import load_config
 from before_commit.clientlib import MANIFEST_HOOK_DICT
 from before_commit.commands.run import Classifier
+from before_commit.config import apply_defaults
 
 
 def exclude_matches_any(
