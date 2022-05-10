@@ -139,7 +139,7 @@ META = 'meta'
 # should inherit from Conditional if sha support is dropped
 class WarnMutableRev(ConditionalOptional):
     def check(self, dct: dict[str, Any]) -> None:
-        super().check(dct)
+        super().check(dct)  # type: ignore
 
         if self.key in dct:
             rev = dct[self.key]
@@ -158,7 +158,7 @@ class WarnMutableRev(ConditionalOptional):
 
 class OptionalSensibleRegexAtHook(OptionalNoDefault):
     def check(self, dct: dict[str, Any]) -> None:
-        super().check(dct)
+        super().check(dct)  # type: ignore
 
         if '/*' in dct.get(self.key, ''):
             logger.warning(
@@ -177,7 +177,7 @@ class OptionalSensibleRegexAtHook(OptionalNoDefault):
 
 class OptionalSensibleRegexAtTop(OptionalNoDefault):
     def check(self, dct: dict[str, Any]) -> None:
-        super().check(dct)
+        super().check(dct)  # type: ignore
 
         if '/*' in dct.get(self.key, ''):
             logger.warning(
@@ -207,20 +207,20 @@ class MigrateShaToRev:
 
     def check(self, dct: dict[str, Any]) -> None:
         if dct.get('repo') in {LOCAL, META}:
-            self._cond('rev').check(dct)
-            self._cond('sha').check(dct)
+            self._cond('rev').check(dct)  # type: ignore
+            self._cond('sha').check(dct)  # type: ignore
         elif 'sha' in dct and 'rev' in dct:
             raise ValidationError('Cannot specify both sha and rev')
         elif 'sha' in dct:
-            self._cond('sha').check(dct)
+            self._cond('sha').check(dct)  # type: ignore
         else:
-            self._cond('rev').check(dct)
+            self._cond('rev').check(dct)  # type: ignore
 
     def apply_default(self, dct: dict[str, Any]) -> None:
         if 'sha' in dct:
             dct['rev'] = dct.pop('sha')
 
-    remove_default = Required.remove_default
+    remove_default = Required.remove_default  # type: ignore
 
 
 def _entry(modname: str) -> str:
@@ -290,7 +290,7 @@ META_HOOK_DICT = Map(
     NotAllowed('entry', check_any),
     *(
         # default to the hook definition for the meta hooks
-        ConditionalOptional(key, check_any, value, 'id', hook_id)
+        ConditionalOptional(key, check_any, value, 'id', hook_id, False)
         for hook_id, values in _meta
         for key, value in values
     ),
@@ -328,14 +328,17 @@ CONFIG_REPO_DICT = Map(
     ConditionalRecurse(
         'hooks', Array(CONFIG_HOOK_DICT),
         'repo', NotIn(LOCAL, META),
+        False,
     ),
     ConditionalRecurse(
         'hooks', Array(MANIFEST_HOOK_DICT),
         'repo', LOCAL,
+        False,
     ),
     ConditionalRecurse(
         'hooks', Array(META_HOOK_DICT),
         'repo', META,
+        False,
     ),
 
     MigrateShaToRev(),
