@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 import functools
 import os
+import shutil
 import sys
 from typing import Generator
 from typing import Sequence
@@ -16,6 +17,7 @@ from before_commit.hook import Hook
 from before_commit.languages import helpers
 from before_commit.languages.python import bin_dir
 from before_commit.prefix import Prefix
+from before_commit.util import CalledProcessError
 from before_commit.util import clean_path_on_failure
 from before_commit.util import cmd_output
 from before_commit.util import cmd_output_b
@@ -98,7 +100,20 @@ def install_environment(
         ]
         if version != C.DEFAULT:
             cmd.extend(['-n', version])
-        cmd_output_b(*cmd)
+        try:
+            cmd_output_b(*cmd)
+
+            # do a sanity check
+            with in_env(prefix, version):
+                helpers.run_setup_cmd(prefix, ('npm', '--version'))
+        except CalledProcessError:  # pragma: no cover
+            shutil.rmtree(envdir)
+            cmd = [
+                sys.executable, '-mnodeenv', '--source', '--clean-src', envdir,
+            ]
+            if version != C.DEFAULT:
+                cmd.extend(['-n', version])
+            cmd_output_b(*cmd)
 
         with in_env(prefix, version):
             # https://npm.community/t/npm-install-g-git-vs-git-clone-cd-npm-install-g/5449
