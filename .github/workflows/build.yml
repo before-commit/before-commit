@@ -17,8 +17,7 @@ jobs:
         os:
           - ubuntu-latest
           - macos-latest
-          - windows-2019
-          - windows-2022
+          - windows-latest
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3.0.2
