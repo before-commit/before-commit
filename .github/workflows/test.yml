@@ -24,8 +24,7 @@ jobs:
         os:
           - ubuntu-latest
           - macos-latest
-          - windows-2019
-          - windows-2022
+          - windows-latest
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -48,8 +47,8 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
-          - macos-latest
+          - ubuntu-20.04
+          - macos-11
           - windows-2019
           - windows-2022
         py:
