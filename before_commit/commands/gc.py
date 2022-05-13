@@ -36,7 +36,9 @@ def _mark_used_repos(
             return
 
         try:
-            manifest = load_manifest(os.path.join(path, C.MANIFEST_FILE))
+            manifest = load_manifest(
+                os.path.join(path, C.DEFAULT_MANIFEST_FILE),
+            )
         except InvalidManifestError:
             return
         else:

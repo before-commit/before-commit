@@ -20,7 +20,7 @@ from testing.util import git_commit
 
 
 def test_validate_config_file_exists(tmpdir):
-    cfg = tmpdir.join(C.CONFIG_FILE).ensure()
+    cfg = tmpdir.join(C.DEFAULT_CONFIG_FILE).ensure()
     hook_impl._validate_config(0, cfg, True)
 
 
@@ -290,7 +290,7 @@ def test_hook_impl_main_noop_pre_push(cap_out, store, push_example):
             write_config('.', sample_local_config())
             ret = hook_impl.hook_impl(
                 store,
-                config=C.CONFIG_FILE,
+                config=C.DEFAULT_CONFIG_FILE,
                 color=False,
                 hook_type='pre-push',
                 hook_dir='.git/hooks',
@@ -306,7 +306,7 @@ def test_hook_impl_main_runs_hooks(cap_out, tempdir_factory, store):
         write_config('.', sample_local_config())
         ret = hook_impl.hook_impl(
             store,
-            config=C.CONFIG_FILE,
+            config=C.DEFAULT_CONFIG_FILE,
             color=False,
             hook_type='pre-commit',
             hook_dir='.git/hooks',

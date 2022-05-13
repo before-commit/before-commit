@@ -16,7 +16,7 @@ from testing.util import cwd
 
 def _args(**kwargs):
     kwargs.setdefault('command', 'help')
-    kwargs.setdefault('config', C.CONFIG_FILE)
+    kwargs.setdefault('config', C.DEFAULT_CONFIG_FILE)
     return argparse.Namespace(**kwargs)
 
 
@@ -29,7 +29,7 @@ def test_adjust_args_and_chdir_noop(in_git_dir):
     args = _args(command='run', files=['f1', 'f2'])
     main._adjust_args_and_chdir(args)
     assert os.getcwd() == in_git_dir
-    assert args.config == C.CONFIG_FILE
+    assert args.config == C.DEFAULT_CONFIG_FILE
     assert args.files == ['f1', 'f2']
 
 
@@ -61,7 +61,7 @@ def test_adjust_args_and_chdir_non_relative_config(in_git_dir):
     args = _args()
     main._adjust_args_and_chdir(args)
     assert os.getcwd() == in_git_dir
-    assert args.config == C.CONFIG_FILE
+    assert args.config == C.DEFAULT_CONFIG_FILE
 
 
 def test_adjust_args_try_repo_repo_relative(in_git_dir):

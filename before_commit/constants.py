@@ -7,8 +7,16 @@ if sys.version_info >= (3, 8):  # pragma: >=3.8 cover
 else:  # pragma: <3.8 cover
     import importlib_metadata
 
-CONFIG_FILE = '.pre-commit-config.yaml'
-MANIFEST_FILE = '.pre-commit-hooks.yaml'
+DEFAULT_CONFIG_FILE = '.pre-commit-config.yaml'
+CONFIG_FILES = [
+    '.pre-commit-config.yaml',
+    '.pre-commit-config.yml',
+]
+DEFAULT_MANIFEST_FILE = '.pre-commit-hooks.yaml'
+MANIFEST_FILES = [
+    '.pre-commit-hooks.yaml',
+    '.pre-commit-hooks.yml',
+]
 
 # Bump when installation changes in a backwards / forwards incompatible way
 INSTALLED_STATE_VERSION = '1'

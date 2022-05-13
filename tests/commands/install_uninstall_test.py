@@ -73,10 +73,10 @@ def test_is_previous_pre_commit(tmpdir):
 
 
 def test_install_pre_commit(in_git_dir, store):
-    assert not install(C.CONFIG_FILE, store, hook_types=['pre-commit'])
+    assert not install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
     assert os.access(in_git_dir.join('.git/hooks/pre-commit').strpath, os.X_OK)
 
-    assert not install(C.CONFIG_FILE, store, hook_types=['pre-push'])
+    assert not install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-push'])
     assert os.access(in_git_dir.join('.git/hooks/pre-push').strpath, os.X_OK)
 
 
@@ -84,40 +84,44 @@ def test_install_hooks_directory_not_present(in_git_dir, store):
     # Simulate some git clients which don't make .git/hooks #234
     if in_git_dir.join('.git/hooks').exists():  # pragma: no cover (odd git)
         in_git_dir.join('.git/hooks').remove()
-    install(C.CONFIG_FILE, store, hook_types=['pre-commit'])
+    install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
     assert in_git_dir.join('.git/hooks/pre-commit').exists()
 
 
 def test_install_multiple_hooks_at_once(in_git_dir, store):
-    install(C.CONFIG_FILE, store, hook_types=['pre-commit', 'pre-push'])
+    install(
+        C.DEFAULT_CONFIG_FILE,
+        store,
+        hook_types=['pre-commit', 'pre-push'],
+    )
     assert in_git_dir.join('.git/hooks/pre-commit').exists()
     assert in_git_dir.join('.git/hooks/pre-push').exists()
-    uninstall(C.CONFIG_FILE, hook_types=['pre-commit', 'pre-push'])
+    uninstall(C.DEFAULT_CONFIG_FILE, hook_types=['pre-commit', 'pre-push'])
     assert not in_git_dir.join('.git/hooks/pre-commit').exists()
     assert not in_git_dir.join('.git/hooks/pre-push').exists()
 
 
 def test_install_refuses_core_hookspath(in_git_dir, store):
     cmd_output('git', 'config', '--local', 'core.hooksPath', 'hooks')
-    assert install(C.CONFIG_FILE, store, hook_types=['pre-commit'])
+    assert install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
 
 
 def test_install_hooks_dead_symlink(in_git_dir, store):
     hook = in_git_dir.join('.git/hooks').ensure_dir().join('pre-commit')
     os.symlink('/fake/baz', hook.strpath)
-    install(C.CONFIG_FILE, store, hook_types=['pre-commit'])
+    install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
     assert hook.exists()
 
 
 def test_uninstall_does_not_blow_up_when_not_there(in_git_dir):
-    assert uninstall(C.CONFIG_FILE, hook_types=['pre-commit']) == 0
+    assert uninstall(C.DEFAULT_CONFIG_FILE, hook_types=['pre-commit']) == 0
 
 
 def test_uninstall(in_git_dir, store):
     assert not in_git_dir.join('.git/hooks/pre-commit').exists()
-    install(C.CONFIG_FILE, store, hook_types=['pre-commit'])
+    install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
     assert in_git_dir.join('.git/hooks/pre-commit').exists()
-    uninstall(C.CONFIG_FILE, hook_types=['pre-commit'])
+    uninstall(C.DEFAULT_CONFIG_FILE, hook_types=['pre-commit'])
     assert not in_git_dir.join('.git/hooks/pre-commit').exists()
 
 
@@ -154,7 +158,8 @@ NORMAL_PRE_COMMIT_RUN = re_assert.Matches(
 def test_install_pre_commit_and_run(tempdir_factory, store):
     path = make_consuming_repo(tempdir_factory, 'script_hooks_repo')
     with cwd(path):
-        assert install(C.CONFIG_FILE, store, hook_types=['pre-commit']) == 0
+        iret = install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
+        assert iret == 0
 
         ret, output = _get_commit_output(tempdir_factory)
         assert ret == 0
@@ -164,7 +169,7 @@ def test_install_pre_commit_and_run(tempdir_factory, store):
 def test_install_pre_commit_and_run_custom_path(tempdir_factory, store):
     path = make_consuming_repo(tempdir_factory, 'script_hooks_repo')
     with cwd(path):
-        cmd_output('git', 'mv', C.CONFIG_FILE, 'custom.yaml')
+        cmd_output('git', 'mv', C.DEFAULT_CONFIG_FILE, 'custom.yaml')
         git_commit(cwd=path)
         assert install('custom.yaml', store, hook_types=['pre-commit']) == 0
 
@@ -181,7 +186,8 @@ def test_install_in_submodule_and_run(tempdir_factory, store):
 
     sub_pth = os.path.join(parent_path, 'sub')
     with cwd(sub_pth):
-        assert install(C.CONFIG_FILE, store, hook_types=['pre-commit']) == 0
+        iret = install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
+        assert iret == 0
         ret, output = _get_commit_output(tempdir_factory)
         assert ret == 0
         NORMAL_PRE_COMMIT_RUN.assert_matches(output)
@@ -194,7 +200,8 @@ def test_install_in_worktree_and_run(tempdir_factory, store):
     cmd_output('git', '-C', src_path, 'worktree', 'add', path, '-b', 'master')
 
     with cwd(path):
-        assert install(C.CONFIG_FILE, store, hook_types=['pre-commit']) == 0
+        iret = install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
+        assert iret == 0
         ret, output = _get_commit_output(tempdir_factory)
         assert ret == 0
         NORMAL_PRE_COMMIT_RUN.assert_matches(output)
@@ -211,7 +218,8 @@ def test_commit_am(tempdir_factory, store):
         with open('unstaged', 'w') as foo_file:
             foo_file.write('Oh hai')
 
-        assert install(C.CONFIG_FILE, store, hook_types=['pre-commit']) == 0
+        iret = install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
+        assert iret == 0
 
         ret, output = _get_commit_output(tempdir_factory)
         assert ret == 0
@@ -220,7 +228,8 @@ def test_commit_am(tempdir_factory, store):
 def test_unicode_merge_commit_message(tempdir_factory, store):
     path = make_consuming_repo(tempdir_factory, 'script_hooks_repo')
     with cwd(path):
-        assert install(C.CONFIG_FILE, store, hook_types=['pre-commit']) == 0
+        iret = install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
+        assert iret == 0
         cmd_output('git', 'checkout', 'master', '-b', 'foo')
         git_commit('-n', cwd=path)
         cmd_output('git', 'checkout', 'master')
@@ -237,8 +246,10 @@ def test_unicode_merge_commit_message(tempdir_factory, store):
 def test_install_idempotent(tempdir_factory, store):
     path = make_consuming_repo(tempdir_factory, 'script_hooks_repo')
     with cwd(path):
-        assert install(C.CONFIG_FILE, store, hook_types=['pre-commit']) == 0
-        assert install(C.CONFIG_FILE, store, hook_types=['pre-commit']) == 0
+        iret = install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
+        assert iret == 0
+        iret = install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
+        assert iret == 0
 
         ret, output = _get_commit_output(tempdir_factory)
         assert ret == 0
@@ -265,7 +276,8 @@ def _path_without_us():
 def test_environment_not_sourced(tempdir_factory, store):
     path = make_consuming_repo(tempdir_factory, 'script_hooks_repo')
     with cwd(path):
-        assert not install(C.CONFIG_FILE, store, hook_types=['pre-commit'])
+        iret = install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
+        assert not iret
         # simulate deleting the virtualenv by rewriting the exe
         hook = os.path.join(path, '.git/hooks/pre-commit')
         with open(hook) as f:
@@ -310,7 +322,8 @@ FAILING_PRE_COMMIT_RUN = re_assert.Matches(
 def test_failing_hooks_returns_nonzero(tempdir_factory, store):
     path = make_consuming_repo(tempdir_factory, 'failing_hook_repo')
     with cwd(path):
-        assert install(C.CONFIG_FILE, store, hook_types=['pre-commit']) == 0
+        iret = install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
+        assert iret == 0
 
         ret, output = _get_commit_output(tempdir_factory)
         assert ret == 1
@@ -343,7 +356,8 @@ def test_install_existing_hooks_no_overwrite(tempdir_factory, store):
         EXISTING_COMMIT_RUN.assert_matches(output)
 
         # Now install pre-commit (no-overwrite)
-        assert install(C.CONFIG_FILE, store, hook_types=['pre-commit']) == 0
+        iret = install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
+        assert iret == 0
 
         # We should run both the legacy and pre-commit hooks
         ret, output = _get_commit_output(tempdir_factory)
@@ -356,10 +370,12 @@ def test_legacy_overwriting_legacy_hook(tempdir_factory, store):
     path = make_consuming_repo(tempdir_factory, 'script_hooks_repo')
     with cwd(path):
         _write_legacy_hook(path)
-        assert install(C.CONFIG_FILE, store, hook_types=['pre-commit']) == 0
+        iret = install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
+        assert iret == 0
         _write_legacy_hook(path)
         # this previously crashed on windows.  See #1010
-        assert install(C.CONFIG_FILE, store, hook_types=['pre-commit']) == 0
+        iret = install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
+        assert iret == 0
 
 
 def test_install_existing_hook_no_overwrite_idempotent(tempdir_factory, store):
@@ -368,8 +384,10 @@ def test_install_existing_hook_no_overwrite_idempotent(tempdir_factory, store):
         _write_legacy_hook(path)
 
         # Install twice
-        assert install(C.CONFIG_FILE, store, hook_types=['pre-commit']) == 0
-        assert install(C.CONFIG_FILE, store, hook_types=['pre-commit']) == 0
+        iret = install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
+        assert iret == 0
+        iret = install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
+        assert iret == 0
 
         # We should run both the legacy and pre-commit hooks
         ret, output = _get_commit_output(tempdir_factory)
@@ -388,7 +406,8 @@ def test_install_with_existing_non_utf8_script(tmpdir, store):
     )
 
     with tmpdir.as_cwd():
-        assert install(C.CONFIG_FILE, store, hook_types=['pre-commit']) == 0
+        iret = install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
+        assert iret == 0
 
 
 FAIL_OLD_HOOK = re_assert.Matches(
@@ -407,7 +426,8 @@ def test_failing_existing_hook_returns_1(tempdir_factory, store):
             f.write('#!/usr/bin/env bash\necho "fail!"\nexit 1\n')
         make_executable(f.name)
 
-        assert install(C.CONFIG_FILE, store, hook_types=['pre-commit']) == 0
+        iret = install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
+        assert iret == 0
 
         # We should get a failure from the legacy hook
         ret, output = _get_commit_output(tempdir_factory)
@@ -419,7 +439,10 @@ def test_install_overwrite_no_existing_hooks(tempdir_factory, store):
     path = make_consuming_repo(tempdir_factory, 'script_hooks_repo')
     with cwd(path):
         assert not install(
-            C.CONFIG_FILE, store, hook_types=['pre-commit'], overwrite=True,
+            C.DEFAULT_CONFIG_FILE,
+            store,
+            hook_types=['pre-commit'],
+            overwrite=True,
         )
 
         ret, output = _get_commit_output(tempdir_factory)
@@ -432,7 +455,10 @@ def test_install_overwrite(tempdir_factory, store):
     with cwd(path):
         _write_legacy_hook(path)
         assert not install(
-            C.CONFIG_FILE, store, hook_types=['pre-commit'], overwrite=True,
+            C.DEFAULT_CONFIG_FILE,
+            store,
+            hook_types=['pre-commit'],
+            overwrite=True,
         )
 
         ret, output = _get_commit_output(tempdir_factory)
@@ -446,8 +472,9 @@ def test_uninstall_restores_legacy_hooks(tempdir_factory, store):
         _write_legacy_hook(path)
 
         # Now install and uninstall pre-commit
-        assert install(C.CONFIG_FILE, store, hook_types=['pre-commit']) == 0
-        assert uninstall(C.CONFIG_FILE, hook_types=['pre-commit']) == 0
+        iret = install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
+        assert iret == 0
+        assert uninstall(C.DEFAULT_CONFIG_FILE, hook_types=['pre-commit']) == 0
 
         # Make sure we installed the "old" hook correctly
         ret, output = _get_commit_output(tempdir_factory, touch_file='baz')
@@ -470,7 +497,8 @@ def test_replace_old_commit_script(tempdir_factory, store):
         make_executable(f.name)
 
         # Install normally
-        assert install(C.CONFIG_FILE, store, hook_types=['pre-commit']) == 0
+        iret = install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
+        assert iret == 0
 
         ret, output = _get_commit_output(tempdir_factory)
         assert ret == 0
@@ -483,7 +511,7 @@ def test_uninstall_doesnt_remove_not_our_hooks(in_git_dir):
     before_commit.write('#!/usr/bin/env bash\necho 1\n')
     make_executable(before_commit.strpath)
 
-    assert uninstall(C.CONFIG_FILE, hook_types=['pre-commit']) == 0
+    assert uninstall(C.DEFAULT_CONFIG_FILE, hook_types=['pre-commit']) == 0
 
     assert before_commit.exists()
 
@@ -499,7 +527,12 @@ PRE_INSTALLED = re_assert.Matches(
 def test_installs_hooks_with_hooks_True(tempdir_factory, store):
     path = make_consuming_repo(tempdir_factory, 'script_hooks_repo')
     with cwd(path):
-        install(C.CONFIG_FILE, store, hook_types=['pre-commit'], hooks=True)
+        install(
+            C.DEFAULT_CONFIG_FILE,
+            store,
+            hook_types=['pre-commit'],
+            hooks=True,
+        )
         ret, output = _get_commit_output(
             tempdir_factory, pre_commit_home=store.directory,
         )
@@ -511,8 +544,8 @@ def test_installs_hooks_with_hooks_True(tempdir_factory, store):
 def test_install_hooks_command(tempdir_factory, store):
     path = make_consuming_repo(tempdir_factory, 'script_hooks_repo')
     with cwd(path):
-        install(C.CONFIG_FILE, store, hook_types=['pre-commit'])
-        install_hooks(C.CONFIG_FILE, store)
+        install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
+        install_hooks(C.DEFAULT_CONFIG_FILE, store)
         ret, output = _get_commit_output(
             tempdir_factory, pre_commit_home=store.directory,
         )
@@ -524,7 +557,7 @@ def test_install_hooks_command(tempdir_factory, store):
 def test_installed_from_venv(tempdir_factory, store):
     path = make_consuming_repo(tempdir_factory, 'script_hooks_repo')
     with cwd(path):
-        install(C.CONFIG_FILE, store, hook_types=['pre-commit'])
+        install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
         # No environment so pre-commit is not on the path when running!
         # Should still pick up the python from when we installed
         ret, output = _get_commit_output(
@@ -561,7 +594,7 @@ def test_pre_push_integration_failing(tempdir_factory, store):
     path = tempdir_factory.get()
     cmd_output('git', 'clone', upstream, path)
     with cwd(path):
-        install(C.CONFIG_FILE, store, hook_types=['pre-push'])
+        install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-push'])
         # commit succeeds because pre-commit is only installed for pre-push
         assert _get_commit_output(tempdir_factory)[0] == 0
         assert _get_commit_output(tempdir_factory, touch_file='zzz')[0] == 0
@@ -579,7 +612,7 @@ def test_pre_push_integration_accepted(tempdir_factory, store):
     path = tempdir_factory.get()
     cmd_output('git', 'clone', upstream, path)
     with cwd(path):
-        install(C.CONFIG_FILE, store, hook_types=['pre-push'])
+        install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-push'])
         assert _get_commit_output(tempdir_factory)[0] == 0
 
         retc, output = _get_push_output(tempdir_factory)
@@ -599,7 +632,7 @@ def test_pre_push_force_push_without_fetch(tempdir_factory, store):
         assert _get_push_output(tempdir_factory)[0] == 0
 
     with cwd(path2):
-        install(C.CONFIG_FILE, store, hook_types=['pre-push'])
+        install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-push'])
         assert _get_commit_output(tempdir_factory, msg='force!')[0] == 0
 
         retc, output = _get_push_output(tempdir_factory, opts=('--force',))
@@ -614,7 +647,7 @@ def test_pre_push_new_upstream(tempdir_factory, store):
     path = tempdir_factory.get()
     cmd_output('git', 'clone', upstream, path)
     with cwd(path):
-        install(C.CONFIG_FILE, store, hook_types=['pre-push'])
+        install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-push'])
         assert _get_commit_output(tempdir_factory)[0] == 0
 
         cmd_output('git', 'remote', 'rename', 'origin', 'upstream')
@@ -644,7 +677,7 @@ def test_pre_push_environment_variables(tempdir_factory, store):
     cmd_output('git', 'clone', upstream, clone)
     add_config_to_repo(clone, config)
     with cwd(clone):
-        install(C.CONFIG_FILE, store, hook_types=['pre-push'])
+        install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-push'])
 
         cmd_output('git', 'remote', 'rename', 'origin', 'origin2')
         retc, output = _get_push_output(tempdir_factory, remote='origin2')
@@ -657,7 +690,7 @@ def test_pre_push_integration_empty_push(tempdir_factory, store):
     path = tempdir_factory.get()
     cmd_output('git', 'clone', upstream, path)
     with cwd(path):
-        install(C.CONFIG_FILE, store, hook_types=['pre-push'])
+        install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-push'])
         _get_push_output(tempdir_factory)
         retc, output = _get_push_output(tempdir_factory)
         assert output == 'Everything up-to-date\n'
@@ -680,7 +713,7 @@ def test_pre_push_legacy(tempdir_factory, store):
             )
         make_executable(f.name)
 
-        install(C.CONFIG_FILE, store, hook_types=['pre-push'])
+        install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-push'])
         assert _get_commit_output(tempdir_factory)[0] == 0
 
         retc, output = _get_push_output(tempdir_factory)
@@ -694,7 +727,7 @@ def test_pre_push_legacy(tempdir_factory, store):
 def test_commit_msg_integration_failing(
         commit_msg_repo, tempdir_factory, store,
 ):
-    install(C.CONFIG_FILE, store, hook_types=['commit-msg'])
+    install(C.DEFAULT_CONFIG_FILE, store, hook_types=['commit-msg'])
     retc, out = _get_commit_output(tempdir_factory)
     assert retc == 1
     assert out == '''\
@@ -707,7 +740,7 @@ Must have "Signed off by:"...............................................Failed
 def test_commit_msg_integration_passing(
         commit_msg_repo, tempdir_factory, store,
 ):
-    install(C.CONFIG_FILE, store, hook_types=['commit-msg'])
+    install(C.DEFAULT_CONFIG_FILE, store, hook_types=['commit-msg'])
     msg = 'Hi\nSigned off by: me, lol'
     retc, out = _get_commit_output(tempdir_factory, msg=msg)
     assert retc == 0
@@ -728,7 +761,7 @@ def test_commit_msg_legacy(commit_msg_repo, tempdir_factory, store):
         )
     make_executable(hook_path)
 
-    install(C.CONFIG_FILE, store, hook_types=['commit-msg'])
+    install(C.DEFAULT_CONFIG_FILE, store, hook_types=['commit-msg'])
 
     msg = 'Hi\nSigned off by: asottile'
     retc, out = _get_commit_output(tempdir_factory, msg=msg)
@@ -759,7 +792,7 @@ def test_post_commit_integration(tempdir_factory, store):
         _get_commit_output(tempdir_factory)
         assert not os.path.exists('post-commit.tmp')
 
-        install(C.CONFIG_FILE, store, hook_types=['post-commit'])
+        install(C.DEFAULT_CONFIG_FILE, store, hook_types=['post-commit'])
         _get_commit_output(tempdir_factory)
         assert os.path.exists('post-commit.tmp')
 
@@ -797,7 +830,7 @@ def test_post_merge_integration(tempdir_factory, store):
         git_commit()
 
         cmd_output('git', 'checkout', 'master')
-        install(C.CONFIG_FILE, store, hook_types=['post-merge'])
+        install(C.DEFAULT_CONFIG_FILE, store, hook_types=['post-merge'])
         retc, stdout, stderr = cmd_output_mocked_pre_commit_home(
             'git', 'merge', 'branch',
             tempdir_factory=tempdir_factory,
@@ -826,7 +859,7 @@ def test_post_rewrite_integration(tempdir_factory, store):
     with cwd(path):
         open('init', 'a').close()
         cmd_output('git', 'add', '.')
-        install(C.CONFIG_FILE, store, hook_types=['post-rewrite'])
+        install(C.DEFAULT_CONFIG_FILE, store, hook_types=['post-rewrite'])
         git_commit()
 
         assert not os.path.exists('post-rewrite.tmp')
@@ -864,7 +897,7 @@ def test_post_checkout_integration(tempdir_factory, store):
         git_commit()
         cmd_output('git', 'checkout', 'master')
 
-        install(C.CONFIG_FILE, store, hook_types=['post-checkout'])
+        install(C.DEFAULT_CONFIG_FILE, store, hook_types=['post-checkout'])
         retc, _, stderr = cmd_output('git', 'checkout', 'feature')
         assert stderr is not None
         assert retc == 0
@@ -890,8 +923,8 @@ def test_skips_post_checkout_unstaged_changes(tempdir_factory, store):
         cmd_output('git', 'add', '.')
         _get_commit_output(tempdir_factory)
 
-        install(C.CONFIG_FILE, store, hook_types=['pre-commit'])
-        install(C.CONFIG_FILE, store, hook_types=['post-checkout'])
+        install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
+        install(C.DEFAULT_CONFIG_FILE, store, hook_types=['post-checkout'])
 
         # make an unstaged change so staged_files_only fires
         open('file', 'a').close()
@@ -906,7 +939,7 @@ def test_skips_post_checkout_unstaged_changes(tempdir_factory, store):
 def test_prepare_commit_msg_integration_failing(
         failing_prepare_commit_msg_repo, tempdir_factory, store,
 ):
-    install(C.CONFIG_FILE, store, hook_types=['prepare-commit-msg'])
+    install(C.DEFAULT_CONFIG_FILE, store, hook_types=['prepare-commit-msg'])
     retc, out = _get_commit_output(tempdir_factory)
     assert retc == 1
     assert out == '''\
@@ -919,7 +952,7 @@ Add "Signed off by:".....................................................Failed
 def test_prepare_commit_msg_integration_passing(
         prepare_commit_msg_repo, tempdir_factory, store,
 ):
-    install(C.CONFIG_FILE, store, hook_types=['prepare-commit-msg'])
+    install(C.DEFAULT_CONFIG_FILE, store, hook_types=['prepare-commit-msg'])
     retc, out = _get_commit_output(tempdir_factory, msg='Hi')
     assert retc == 0
     first_line = out.splitlines()[0]
@@ -948,7 +981,7 @@ def test_prepare_commit_msg_legacy(
         )
     make_executable(hook_path)
 
-    install(C.CONFIG_FILE, store, hook_types=['prepare-commit-msg'])
+    install(C.DEFAULT_CONFIG_FILE, store, hook_types=['prepare-commit-msg'])
 
     retc, out = _get_commit_output(tempdir_factory, msg='Hi')
     assert retc == 0
@@ -980,7 +1013,11 @@ def test_pre_merge_commit_integration(tempdir_factory, store):
 
     path = make_consuming_repo(tempdir_factory, 'script_hooks_repo')
     with cwd(path):
-        ret = install(C.CONFIG_FILE, store, hook_types=['pre-merge-commit'])
+        ret = install(
+            C.DEFAULT_CONFIG_FILE,
+            store,
+            hook_types=['pre-merge-commit'],
+        )
         assert ret == 0
 
         cmd_output('git', 'checkout', 'master', '-b', 'feature')
@@ -999,7 +1036,7 @@ def test_install_disallow_missing_config(tempdir_factory, store):
     with cwd(path):
         remove_config_from_repo(path)
         ret = install(
-            C.CONFIG_FILE, store, hook_types=['pre-commit'],
+            C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'],
             overwrite=True, skip_on_missing_config=False,
         )
         assert ret == 0
@@ -1013,7 +1050,7 @@ def test_install_allow_missing_config(tempdir_factory, store):
     with cwd(path):
         remove_config_from_repo(path)
         ret = install(
-            C.CONFIG_FILE, store, hook_types=['pre-commit'],
+            C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'],
             overwrite=True, skip_on_missing_config=True,
         )
         assert ret == 0
@@ -1032,7 +1069,7 @@ def test_install_temporarily_allow_mising_config(tempdir_factory, store):
     with cwd(path):
         remove_config_from_repo(path)
         ret = install(
-            C.CONFIG_FILE, store, hook_types=['pre-commit'],
+            C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'],
             overwrite=True, skip_on_missing_config=False,
         )
         assert ret == 0
@@ -1049,12 +1086,12 @@ def test_install_temporarily_allow_mising_config(tempdir_factory, store):
 
 def test_install_uninstall_default_hook_types(in_git_dir, store):
     cfg_src = 'default_install_hook_types: [pre-commit, pre-push]\nrepos: []\n'
-    in_git_dir.join(C.CONFIG_FILE).write(cfg_src)
+    in_git_dir.join(C.DEFAULT_CONFIG_FILE).write(cfg_src)
 
-    assert not install(C.CONFIG_FILE, store, hook_types=None)
+    assert not install(C.DEFAULT_CONFIG_FILE, store, hook_types=None)
     assert os.access(in_git_dir.join('.git/hooks/pre-commit').strpath, os.X_OK)
     assert os.access(in_git_dir.join('.git/hooks/pre-push').strpath, os.X_OK)
 
-    assert not uninstall(C.CONFIG_FILE, hook_types=None)
+    assert not uninstall(C.DEFAULT_CONFIG_FILE, hook_types=None)
     assert not in_git_dir.join('.git/hooks/pre-commit').exists()
     assert not in_git_dir.join('.git/hooks/pre-push').exists()

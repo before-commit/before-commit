@@ -54,7 +54,7 @@ def modify_manifest(path, commit=True):
     """Modify the manifest yielded by this context to write to
     .pre-commit-hooks.yaml.
     """
-    manifest_path = os.path.join(path, C.MANIFEST_FILE)
+    manifest_path = os.path.join(path, C.DEFAULT_MANIFEST_FILE)
     with open(manifest_path) as f:
         manifest = yaml_load(f.read())
     yield manifest
@@ -69,7 +69,7 @@ def modify_config(path='.', commit=True):
     """Modify the config yielded by this context to write to
     .pre-commit-config.yaml
     """
-    config_path = os.path.join(path, C.CONFIG_FILE)
+    config_path = os.path.join(path, C.DEFAULT_CONFIG_FILE)
     with open(config_path) as f:
         config = yaml_load(f.read())
     yield config
@@ -96,7 +96,7 @@ def sample_meta_config():
 
 
 def make_config_from_repo(repo_path, rev=None, hooks=None, check=True):
-    manifest = load_manifest(os.path.join(repo_path, C.MANIFEST_FILE))
+    manifest = load_manifest(os.path.join(repo_path, C.DEFAULT_MANIFEST_FILE))
     config = {
         'repo': f'file://{repo_path}',
         'rev': rev or git.head_rev(repo_path),
@@ -112,14 +112,14 @@ def make_config_from_repo(repo_path, rev=None, hooks=None, check=True):
         return config
 
 
-def read_config(directory, config_file=C.CONFIG_FILE):
+def read_config(directory, config_file=C.DEFAULT_CONFIG_FILE):
     config_path = os.path.join(directory, config_file)
     with open(config_path) as f:
         config = yaml_load(f.read())
     return config
 
 
-def write_config(directory, config, config_file=C.CONFIG_FILE):
+def write_config(directory, config, config_file=C.DEFAULT_CONFIG_FILE):
     if type(config) is not list and 'repos' not in config:
         assert isinstance(config, dict), config
         config = {'repos': [config]}
@@ -127,14 +127,14 @@ def write_config(directory, config, config_file=C.CONFIG_FILE):
         outfile.write(yaml_dump(config))
 
 
-def add_config_to_repo(git_path, config, config_file=C.CONFIG_FILE):
+def add_config_to_repo(git_path, config, config_file=C.DEFAULT_CONFIG_FILE):
     write_config(git_path, config, config_file=config_file)
     cmd_output('git', 'add', config_file, cwd=git_path)
     git_commit(msg=add_config_to_repo.__name__, cwd=git_path)
     return git_path
 
 
-def remove_config_from_repo(git_path, config_file=C.CONFIG_FILE):
+def remove_config_from_repo(git_path, config_file=C.DEFAULT_CONFIG_FILE):
     cmd_output('git', 'rm', config_file, cwd=git_path)
     git_commit(msg=remove_config_from_repo.__name__, cwd=git_path)
     return git_path

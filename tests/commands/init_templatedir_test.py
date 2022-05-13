@@ -18,7 +18,12 @@ from testing.util import git_commit
 
 def test_init_templatedir(tmpdir, tempdir_factory, store, cap_out):
     target = str(tmpdir.join('tmpl'))
-    init_templatedir(C.CONFIG_FILE, store, target, hook_types=['pre-commit'])
+    init_templatedir(
+        C.DEFAULT_CONFIG_FILE,
+        store,
+        target,
+        hook_types=['pre-commit'],
+    )
     lines = cap_out.get().splitlines()
     assert lines[0].startswith('pre-commit installed at ')
     assert lines[1] == (
@@ -46,7 +51,7 @@ def test_init_templatedir_already_set(tmpdir, tempdir_factory, store, cap_out):
     with cwd(tmp_git_dir):
         cmd_output('git', 'config', 'init.templateDir', target)
         init_templatedir(
-            C.CONFIG_FILE, store, target, hook_types=['pre-commit'],
+            C.DEFAULT_CONFIG_FILE, store, target, hook_types=['pre-commit'],
         )
 
     lines = cap_out.get().splitlines()
@@ -60,7 +65,7 @@ def test_init_templatedir_not_set(tmpdir, store, cap_out):
         with tmpdir.join('tmpl').ensure_dir().as_cwd():
             # we have not set init.templateDir so this should produce a warning
             init_templatedir(
-                C.CONFIG_FILE, store, '.', hook_types=['pre-commit'],
+                C.DEFAULT_CONFIG_FILE, store, '.', hook_types=['pre-commit'],
             )
 
     lines = cap_out.get().splitlines()
@@ -77,7 +82,10 @@ def test_init_templatedir_expanduser(tmpdir, tempdir_factory, store, cap_out):
         cmd_output('git', 'config', 'init.templateDir', '~/templatedir')
         with mock.patch.object(os.path, 'expanduser', return_value=target):
             init_templatedir(
-                C.CONFIG_FILE, store, target, hook_types=['pre-commit'],
+                C.DEFAULT_CONFIG_FILE,
+                store,
+                target,
+                hook_types=['pre-commit'],
             )
 
     lines = cap_out.get().splitlines()
@@ -91,7 +99,7 @@ def test_init_templatedir_hookspath_set(tmpdir, tempdir_factory, store):
     with cwd(tmp_git_dir):
         cmd_output('git', 'config', '--local', 'core.hooksPath', 'hooks')
         init_templatedir(
-            C.CONFIG_FILE, store, target, hook_types=['pre-commit'],
+            C.DEFAULT_CONFIG_FILE, store, target, hook_types=['pre-commit'],
         )
     assert target.join('hooks/pre-commit').exists()
 
@@ -100,7 +108,7 @@ def test_init_templatedir_hookspath_set(tmpdir, tempdir_factory, store):
     ('skip', 'commit_retcode', 'commit_output_snippet'),
     (
         (True, 0, 'Skipping `pre-commit`.'),
-        (False, 1, f'No {C.CONFIG_FILE} file was found'),
+        (False, 1, f'No {C.DEFAULT_CONFIG_FILE} file was found'),
     ),
 )
 def test_init_templatedir_skip_on_missing_config(
@@ -117,7 +125,7 @@ def test_init_templatedir_skip_on_missing_config(
     with cwd(init_git_dir):
         cmd_output('git', 'config', 'init.templateDir', target)
         init_templatedir(
-            C.CONFIG_FILE,
+            C.DEFAULT_CONFIG_FILE,
             store,
             target,
             hook_types=['pre-commit'],
