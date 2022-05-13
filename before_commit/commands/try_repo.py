@@ -57,14 +57,16 @@ def try_repo(args: argparse.Namespace) -> int:
             hooks = [{'id': args.hook}]
         else:
             repo_path = store.clone(repo, ref)
-            manifest = load_manifest(os.path.join(repo_path, C.MANIFEST_FILE))
+            manifest = load_manifest(
+                os.path.join(repo_path, C.DEFAULT_MANIFEST_FILE),
+            )
             manifest = sorted(manifest, key=lambda hook: hook['id'])
             hooks = [{'id': hook['id']} for hook in manifest]
 
         config = {'repos': [{'repo': repo, 'rev': ref, 'hooks': hooks}]}
         config_s = yaml_dump(config)
 
-        config_filename = os.path.join(tempdir, C.CONFIG_FILE)
+        config_filename = os.path.join(tempdir, C.DEFAULT_CONFIG_FILE)
         with open(config_filename, 'w') as cfg:
             cfg.write(config_s)
 

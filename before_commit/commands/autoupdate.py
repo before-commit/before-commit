@@ -83,7 +83,7 @@ def _check_hooks_still_exist_at_rev(
 ) -> None:
     try:
         path = store.clone(repo_config['repo'], info.rev)
-        manifest = load_manifest(os.path.join(path, C.MANIFEST_FILE))
+        manifest = load_manifest(os.path.join(path, C.DEFAULT_MANIFEST_FILE))
     except InvalidManifestError as e:
         raise RepositoryCannotBeUpdatedError(str(e))
 

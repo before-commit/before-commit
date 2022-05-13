@@ -887,7 +887,7 @@ def test_tags_on_repositories(in_tmpdir, tempdir_factory, store):
 def local_python_config():
     # Make a "local" hooks repo that just installs our other hooks repo
     repo_path = get_resource_path('python3_hooks_repo')
-    manifest = load_manifest(os.path.join(repo_path, C.MANIFEST_FILE))
+    manifest = load_manifest(os.path.join(repo_path, C.DEFAULT_MANIFEST_FILE))
     hooks = [
         dict(hook, additional_dependencies=[repo_path]) for hook in manifest
     ]

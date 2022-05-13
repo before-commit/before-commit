@@ -135,7 +135,14 @@ def stage_a_file(filename='foo.py'):
     cmd_output('git', 'add', filename)
 
 
-def _do_run(cap_out, store, repo, args, environ={}, config_file=C.CONFIG_FILE):
+def _do_run(
+    cap_out,
+    store,
+    repo,
+    args,
+    environ={},
+    config_file=C.DEFAULT_CONFIG_FILE,
+):
     with cwd(repo):  # replicates `main._adjust_args_and_chdir` behaviour
         ret = run(config_file, store, args, environ=environ)
     printed = cap_out.get_bytes()
@@ -144,7 +151,7 @@ def _do_run(cap_out, store, repo, args, environ={}, config_file=C.CONFIG_FILE):
 
 def _test_run(
     cap_out, store, repo, opts, expected_outputs, expected_ret, stage,
-    config_file=C.CONFIG_FILE,
+    config_file=C.DEFAULT_CONFIG_FILE,
 ):
     if stage:
         stage_a_file()
@@ -698,7 +705,7 @@ def test_stdout_write_bug_py26(repo_with_failing_hook, store, tempdir_factory):
             config['repos'][0]['hooks'][0]['args'] = ['☃']
         stage_a_file()
 
-        install(C.CONFIG_FILE, store, hook_types=['pre-commit'])
+        install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
 
         # Have to use subprocess because pytest monkeypatches sys.stdout
         _, out = git_commit(
@@ -725,7 +732,7 @@ def test_lots_of_files(store, tempdir_factory):
             open(f'{"a" * 100}{i}', 'w').close()
 
         cmd_output('git', 'add', '.')
-        install(C.CONFIG_FILE, store, hook_types=['pre-commit'])
+        install(C.DEFAULT_CONFIG_FILE, store, hook_types=['pre-commit'])
 
         git_commit(
             fn=cmd_output_mocked_pre_commit_home,
@@ -925,7 +932,10 @@ def test_commit_msg_missing_filename(cap_out, store, repo_with_passing_hook):
 
 
 @pytest.mark.parametrize(
-    'opts', (run_opts(all_files=True), run_opts(files=[C.CONFIG_FILE])),
+    'opts', (
+        run_opts(all_files=True),
+        run_opts(files=[C.DEFAULT_CONFIG_FILE]),
+    ),
 )
 def test_no_unstaged_error_with_all_files_or_files(
         cap_out, store, modified_config_repo, opts,
@@ -1129,7 +1139,7 @@ def test_args_hook_only(cap_out, store, repo_with_passing_hook):
 def test_skipped_without_any_setup_for_post_checkout(in_git_dir, store):
     environ = {'_PRE_COMMIT_SKIP_POST_CHECKOUT': '1'}
     opts = run_opts(hook_stage='post-checkout')
-    assert run(C.CONFIG_FILE, store, opts, environ=environ) == 0
+    assert run(C.DEFAULT_CONFIG_FILE, store, opts, environ=environ) == 0
 
 
 def test_pre_commit_env_variable_set(cap_out, store, repo_with_passing_hook):

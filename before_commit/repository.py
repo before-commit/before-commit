@@ -168,7 +168,10 @@ def _cloned_repository_hooks(
         root_config: dict[str, Any],
 ) -> tuple[Hook, ...]:
     repo, rev = repo_config['repo'], repo_config['rev']
-    manifest_path = os.path.join(store.clone(repo, rev), C.MANIFEST_FILE)
+    manifest_path = os.path.join(
+        store.clone(repo, rev),
+        C.DEFAULT_MANIFEST_FILE,
+    )
     by_id = {hook['id']: hook for hook in load_manifest(manifest_path)}
 
     for hook in repo_config['hooks']:

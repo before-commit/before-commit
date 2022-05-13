@@ -148,7 +148,7 @@ def test_autoupdate_up_to_date_repo(up_to_date, tmpdir, store):
         f'    hooks:\n'
         f'    -   id: foo\n'
     )
-    cfg = tmpdir.join(C.CONFIG_FILE)
+    cfg = tmpdir.join(C.DEFAULT_CONFIG_FILE)
     cfg.write(contents)
 
     assert autoupdate(str(cfg), store, freeze=False, tags_only=False) == 0
@@ -163,20 +163,26 @@ def test_autoupdate_old_revision_broken(tempdir_factory, in_tmpdir, store):
     path = make_repo(tempdir_factory, 'python_hooks_repo')
     config = make_config_from_repo(path, check=False)
 
-    cmd_output('git', 'mv', C.MANIFEST_FILE, 'nope.yaml', cwd=path)
+    cmd_output('git', 'mv', C.DEFAULT_MANIFEST_FILE, 'nope.yaml', cwd=path)
     git_commit(cwd=path)
     # Assume this is the revision the user's old repository was at
     rev = git.head_rev(path)
-    cmd_output('git', 'mv', 'nope.yaml', C.MANIFEST_FILE, cwd=path)
+    cmd_output('git', 'mv', 'nope.yaml', C.DEFAULT_MANIFEST_FILE, cwd=path)
     git_commit(cwd=path)
     update_rev = git.head_rev(path)
 
     config['rev'] = rev
     write_config('.', config)
-    with open(C.CONFIG_FILE) as f:
+    with open(C.DEFAULT_CONFIG_FILE) as f:
         before = f.read()
-    assert autoupdate(C.CONFIG_FILE, store, freeze=False, tags_only=False) == 0
-    with open(C.CONFIG_FILE) as f:
+    aret = autoupdate(
+        C.DEFAULT_CONFIG_FILE,
+        store,
+        freeze=False,
+        tags_only=False,
+    )
+    assert aret == 0
+    with open(C.DEFAULT_CONFIG_FILE) as f:
         after = f.read()
     assert before != after
     assert update_rev in after
@@ -190,7 +196,7 @@ def test_autoupdate_out_of_date_repo(out_of_date, tmpdir, store):
         '    hooks:\n'
         '    -   id: foo\n'
     )
-    cfg = tmpdir.join(C.CONFIG_FILE)
+    cfg = tmpdir.join(C.DEFAULT_CONFIG_FILE)
     cfg.write(fmt.format(out_of_date.path, out_of_date.original_rev))
 
     assert autoupdate(str(cfg), store, freeze=False, tags_only=False) == 0
@@ -222,7 +228,7 @@ def test_autoupdate_only_one_to_update(up_to_date, out_of_date, tmpdir, store):
         '    hooks:\n'
         '    -   id: foo\n'
     )
-    cfg = tmpdir.join(C.CONFIG_FILE)
+    cfg = tmpdir.join(C.DEFAULT_CONFIG_FILE)
     before = fmt.format(
         up_to_date, git.head_rev(up_to_date),
         out_of_date.path, out_of_date.original_rev,
@@ -246,14 +252,14 @@ def test_autoupdate_out_of_date_repo_with_correct_repo_name(
     config = {'repos': [stale_config, local_config]}
     write_config('.', config)
 
-    with open(C.CONFIG_FILE) as f:
+    with open(C.DEFAULT_CONFIG_FILE) as f:
         before = f.read()
     repo_name = f'file://{out_of_date.path}'
     ret = autoupdate(
-        C.CONFIG_FILE, store, freeze=False, tags_only=False,
+        C.DEFAULT_CONFIG_FILE, store, freeze=False, tags_only=False,
         repos=(repo_name,),
     )
-    with open(C.CONFIG_FILE) as f:
+    with open(C.DEFAULT_CONFIG_FILE) as f:
         after = f.read()
     assert ret == 0
     assert before != after
@@ -269,14 +275,14 @@ def test_autoupdate_out_of_date_repo_with_wrong_repo_name(
     )
     write_config('.', config)
 
-    with open(C.CONFIG_FILE) as f:
+    with open(C.DEFAULT_CONFIG_FILE) as f:
         before = f.read()
     # It will not update it, because the name doesn't match
     ret = autoupdate(
-        C.CONFIG_FILE, store, freeze=False, tags_only=False,
+        C.DEFAULT_CONFIG_FILE, store, freeze=False, tags_only=False,
         repos=('dne',),
     )
-    with open(C.CONFIG_FILE) as f:
+    with open(C.DEFAULT_CONFIG_FILE) as f:
         after = f.read()
     assert ret == 0
     assert before == after
@@ -292,7 +298,7 @@ def test_does_not_reformat(tmpdir, out_of_date, store):
         '        # These args are because reasons!\n'
         '        args: [foo, bar, baz]\n'
     )
-    cfg = tmpdir.join(C.CONFIG_FILE)
+    cfg = tmpdir.join(C.DEFAULT_CONFIG_FILE)
     cfg.write(fmt.format(out_of_date.path, out_of_date.original_rev))
 
     assert autoupdate(str(cfg), store, freeze=False, tags_only=False) == 0
@@ -310,7 +316,7 @@ def test_does_not_change_mixed_endlines_read(up_to_date, tmpdir, store):
         '        # These args are because reasons!\r\n'
         '        args: [foo, bar, baz]\r\n'
     )
-    cfg = tmpdir.join(C.CONFIG_FILE)
+    cfg = tmpdir.join(C.DEFAULT_CONFIG_FILE)
 
     expected = fmt.format(up_to_date, git.head_rev(up_to_date)).encode()
     cfg.write_binary(expected)
@@ -329,7 +335,7 @@ def test_does_not_change_mixed_endlines_write(tmpdir, out_of_date, store):
         '        # These args are because reasons!\r\n'
         '        args: [foo, bar, baz]\r\n'
     )
-    cfg = tmpdir.join(C.CONFIG_FILE)
+    cfg = tmpdir.join(C.DEFAULT_CONFIG_FILE)
     cfg.write_binary(
         fmt.format(out_of_date.path, out_of_date.original_rev).encode(),
     )
@@ -357,7 +363,7 @@ def test_loses_formatting_when_not_detectable(out_of_date, store, tmpdir):
             shlex.quote(out_of_date.path), out_of_date.original_rev,
         )
     )
-    cfg = tmpdir.join(C.CONFIG_FILE)
+    cfg = tmpdir.join(C.DEFAULT_CONFIG_FILE)
     cfg.write(config)
 
     assert autoupdate(str(cfg), store, freeze=False, tags_only=False) == 0
@@ -375,8 +381,14 @@ def test_autoupdate_tagged_repo(tagged, in_tmpdir, store):
     config = make_config_from_repo(tagged.path, rev=tagged.original_rev)
     write_config('.', config)
 
-    assert autoupdate(C.CONFIG_FILE, store, freeze=False, tags_only=False) == 0
-    with open(C.CONFIG_FILE) as f:
+    aret = autoupdate(
+        C.DEFAULT_CONFIG_FILE,
+        store,
+        freeze=False,
+        tags_only=False,
+    )
+    assert aret == 0
+    with open(C.DEFAULT_CONFIG_FILE) as f:
         assert 'v1.2.3' in f.read()
 
 
@@ -384,14 +396,26 @@ def test_autoupdate_freeze(tagged, in_tmpdir, store):
     config = make_config_from_repo(tagged.path, rev=tagged.original_rev)
     write_config('.', config)
 
-    assert autoupdate(C.CONFIG_FILE, store, freeze=True, tags_only=False) == 0
-    with open(C.CONFIG_FILE) as f:
+    aret = autoupdate(
+        C.DEFAULT_CONFIG_FILE,
+        store,
+        freeze=True,
+        tags_only=False,
+    )
+    assert aret == 0
+    with open(C.DEFAULT_CONFIG_FILE) as f:
         expected = f'rev: {tagged.head_rev}  # frozen: v1.2.3'
         assert expected in f.read()
 
     # if we un-freeze it should remove the frozen comment
-    assert autoupdate(C.CONFIG_FILE, store, freeze=False, tags_only=False) == 0
-    with open(C.CONFIG_FILE) as f:
+    aret = autoupdate(
+        C.DEFAULT_CONFIG_FILE,
+        store,
+        freeze=False,
+        tags_only=False,
+    )
+    assert aret == 0
+    with open(C.DEFAULT_CONFIG_FILE) as f:
         assert 'rev: v1.2.3\n' in f.read()
 
 
@@ -402,8 +426,14 @@ def test_autoupdate_tags_only(tagged, in_tmpdir, store):
     config = make_config_from_repo(tagged.path, rev=tagged.original_rev)
     write_config('.', config)
 
-    assert autoupdate(C.CONFIG_FILE, store, freeze=False, tags_only=True) == 0
-    with open(C.CONFIG_FILE) as f:
+    aret = autoupdate(
+        C.DEFAULT_CONFIG_FILE,
+        store,
+        freeze=False,
+        tags_only=True,
+    )
+    assert aret == 0
+    with open(C.DEFAULT_CONFIG_FILE) as f:
         assert 'v1.2.3' in f.read()
 
 
@@ -416,8 +446,14 @@ def test_autoupdate_latest_no_config(out_of_date, in_tmpdir, store):
     cmd_output('git', 'rm', '-r', ':/', cwd=out_of_date.path)
     git_commit(cwd=out_of_date.path)
 
-    assert autoupdate(C.CONFIG_FILE, store, freeze=False, tags_only=False) == 1
-    with open(C.CONFIG_FILE) as f:
+    aret = autoupdate(
+        C.DEFAULT_CONFIG_FILE,
+        store,
+        freeze=False,
+        tags_only=False,
+    )
+    assert aret == 1
+    with open(C.DEFAULT_CONFIG_FILE) as f:
         assert out_of_date.original_rev in f.read()
 
 
@@ -440,7 +476,7 @@ def test_autoupdate_hook_disappearing_repo(hook_disappearing, tmpdir, store):
         f'    hooks:\n'
         f'    -   id: foo\n'
     )
-    cfg = tmpdir.join(C.CONFIG_FILE)
+    cfg = tmpdir.join(C.DEFAULT_CONFIG_FILE)
     cfg.write(contents)
 
     assert autoupdate(str(cfg), store, freeze=False, tags_only=False) == 1
@@ -450,7 +486,13 @@ def test_autoupdate_hook_disappearing_repo(hook_disappearing, tmpdir, store):
 def test_autoupdate_local_hooks(in_git_dir, store):
     config = sample_local_config()
     add_config_to_repo('.', config)
-    assert autoupdate(C.CONFIG_FILE, store, freeze=False, tags_only=False) == 0
+    aret = autoupdate(
+        C.DEFAULT_CONFIG_FILE,
+        store,
+        freeze=False,
+        tags_only=False,
+    )
+    assert aret == 0
     new_config_written = read_config('.')
     assert len(new_config_written['repos']) == 1
     assert new_config_written['repos'][0] == config
@@ -465,14 +507,20 @@ def test_autoupdate_local_hooks_with_out_of_date_repo(
     local_config = sample_local_config()
     config = {'repos': [local_config, stale_config]}
     write_config('.', config)
-    assert autoupdate(C.CONFIG_FILE, store, freeze=False, tags_only=False) == 0
+    aret = autoupdate(
+        C.DEFAULT_CONFIG_FILE,
+        store,
+        freeze=False,
+        tags_only=False,
+    )
+    assert aret == 0
     new_config_written = read_config('.')
     assert len(new_config_written['repos']) == 2
     assert new_config_written['repos'][0] == local_config
 
 
 def test_autoupdate_meta_hooks(tmpdir, store):
-    cfg = tmpdir.join(C.CONFIG_FILE)
+    cfg = tmpdir.join(C.DEFAULT_CONFIG_FILE)
     cfg.write(
         'repos:\n'
         '-   repo: meta\n'
@@ -489,7 +537,7 @@ def test_autoupdate_meta_hooks(tmpdir, store):
 
 
 def test_updates_old_format_to_new_format(tmpdir, capsys, store):
-    cfg = tmpdir.join(C.CONFIG_FILE)
+    cfg = tmpdir.join(C.DEFAULT_CONFIG_FILE)
     cfg.write(
         '-   repo: local\n'
         '    hooks:\n'
@@ -525,7 +573,7 @@ def test_maintains_rev_quoting_style(tmpdir, out_of_date, store):
         '    hooks:\n'
         '    -   id: foo\n'
     )
-    cfg = tmpdir.join(C.CONFIG_FILE)
+    cfg = tmpdir.join(C.DEFAULT_CONFIG_FILE)
     cfg.write(fmt.format(path=out_of_date.path, rev=out_of_date.original_rev))
 
     assert autoupdate(str(cfg), store, freeze=False, tags_only=False) == 0

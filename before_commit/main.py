@@ -44,7 +44,7 @@ COMMANDS_NO_GIT = {
 
 def _add_config_option(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
-        '-c', '--config', default=C.CONFIG_FILE,
+        '-c', '--config', default=C.DEFAULT_CONFIG_FILE,
         help='Path to alternate config file',
     )
 
@@ -283,7 +283,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     _add_run_options(run_parser)
 
     sample_config_parser = subparsers.add_parser(
-        'sample-config', help=f'Produce a sample {C.CONFIG_FILE} file',
+        'sample-config', help=f'Produce a sample {C.DEFAULT_CONFIG_FILE} file',
     )
     add_color_option(sample_config_parser)
     _add_config_option(sample_config_parser)

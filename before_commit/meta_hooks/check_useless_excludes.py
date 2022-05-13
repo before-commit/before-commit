@@ -67,7 +67,11 @@ def check_useless_excludes(config_file: str) -> int:
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument('filenames', nargs='*', default=[C.CONFIG_FILE])
+    parser.add_argument(
+        'filenames',
+        nargs='*',
+        default=[C.DEFAULT_CONFIG_FILE],
+    )
     args = parser.parse_args(argv)
 
     retv = 0

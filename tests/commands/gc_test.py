@@ -27,7 +27,7 @@ def _config_count(store):
 
 
 def _remove_config_assert_cleared(store, cap_out):
-    os.remove(C.CONFIG_FILE)
+    os.remove(C.DEFAULT_CONFIG_FILE)
     assert not gc(store)
     assert _config_count(store) == 0
     assert _repo_count(store) == 0
@@ -40,11 +40,16 @@ def test_gc(tempdir_factory, store, in_git_dir, cap_out):
     git_commit(cwd=path)
 
     write_config('.', make_config_from_repo(path, rev=old_rev))
-    store.mark_config_used(C.CONFIG_FILE)
+    store.mark_config_used(C.DEFAULT_CONFIG_FILE)
 
     # update will clone both the old and new repo, making the old one gc-able
-    install_hooks(C.CONFIG_FILE, store)
-    assert not autoupdate(C.CONFIG_FILE, store, freeze=False, tags_only=False)
+    install_hooks(C.DEFAULT_CONFIG_FILE, store)
+    assert not autoupdate(
+        C.DEFAULT_CONFIG_FILE,
+        store,
+        freeze=False,
+        tags_only=False,
+    )
 
     assert _config_count(store) == 1
     assert _repo_count(store) == 2
@@ -59,7 +64,7 @@ def test_gc(tempdir_factory, store, in_git_dir, cap_out):
 def test_gc_repo_not_cloned(tempdir_factory, store, in_git_dir, cap_out):
     path = make_repo(tempdir_factory, 'script_hooks_repo')
     write_config('.', make_config_from_repo(path))
-    store.mark_config_used(C.CONFIG_FILE)
+    store.mark_config_used(C.DEFAULT_CONFIG_FILE)
 
     assert _config_count(store) == 1
     assert _repo_count(store) == 0
@@ -71,14 +76,14 @@ def test_gc_repo_not_cloned(tempdir_factory, store, in_git_dir, cap_out):
 
 def test_gc_meta_repo_does_not_crash(store, in_git_dir, cap_out):
     write_config('.', sample_meta_config())
-    store.mark_config_used(C.CONFIG_FILE)
+    store.mark_config_used(C.DEFAULT_CONFIG_FILE)
     assert not gc(store)
     assert cap_out.get().splitlines()[-1] == '0 repo(s) removed.'
 
 
 def test_gc_local_repo_does_not_crash(store, in_git_dir, cap_out):
     write_config('.', sample_local_config())
-    store.mark_config_used(C.CONFIG_FILE)
+    store.mark_config_used(C.DEFAULT_CONFIG_FILE)
     assert not gc(store)
     assert cap_out.get().splitlines()[-1] == '0 repo(s) removed.'
 
@@ -93,10 +98,10 @@ def test_gc_unused_local_repo_with_env(store, in_git_dir, cap_out):
         }],
     }
     write_config('.', config)
-    store.mark_config_used(C.CONFIG_FILE)
+    store.mark_config_used(C.DEFAULT_CONFIG_FILE)
 
     # this causes the repositories to be created
-    all_hooks(load_config(C.CONFIG_FILE), store)
+    all_hooks(load_config(C.DEFAULT_CONFIG_FILE), store)
 
     assert _config_count(store) == 1
     assert _repo_count(store) == 1
@@ -113,9 +118,9 @@ def test_gc_config_with_missing_hook(
 ):
     path = make_repo(tempdir_factory, 'script_hooks_repo')
     write_config('.', make_config_from_repo(path))
-    store.mark_config_used(C.CONFIG_FILE)
+    store.mark_config_used(C.DEFAULT_CONFIG_FILE)
     # to trigger a clone
-    all_hooks(load_config(C.CONFIG_FILE), store)
+    all_hooks(load_config(C.DEFAULT_CONFIG_FILE), store)
 
     with modify_config() as config:
         # add a hook which does not exist, make sure we don't crash
@@ -134,7 +139,7 @@ def test_gc_config_with_missing_hook(
 def test_gc_deletes_invalid_configs(store, in_git_dir, cap_out):
     config = {'i am': 'invalid'}
     write_config('.', config)
-    store.mark_config_used(C.CONFIG_FILE)
+    store.mark_config_used(C.DEFAULT_CONFIG_FILE)
 
     assert _config_count(store) == 1
     assert not gc(store)
@@ -146,14 +151,14 @@ def test_invalid_manifest_gcd(tempdir_factory, store, in_git_dir, cap_out):
     # clean up repos from old pre-commit versions
     path = make_repo(tempdir_factory, 'script_hooks_repo')
     write_config('.', make_config_from_repo(path))
-    store.mark_config_used(C.CONFIG_FILE)
+    store.mark_config_used(C.DEFAULT_CONFIG_FILE)
 
     # trigger a clone
-    install_hooks(C.CONFIG_FILE, store)
+    install_hooks(C.DEFAULT_CONFIG_FILE, store)
 
     # we'll "break" the manifest to simulate an old version clone
     (_, _, path), = store.select_all_repos()
-    os.remove(os.path.join(path, C.MANIFEST_FILE))
+    os.remove(os.path.join(path, C.DEFAULT_MANIFEST_FILE))
 
     assert _config_count(store) == 1
     assert _repo_count(store) == 1

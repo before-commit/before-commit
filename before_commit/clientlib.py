@@ -253,14 +253,14 @@ _meta = (
     (
         'check-hooks-apply', (
             ('name', 'Check hooks apply to the repository'),
-            ('files', f'^{re.escape(C.CONFIG_FILE)}$'),
+            ('files', f'^{re.escape(C.DEFAULT_CONFIG_FILE)}$'),
             ('entry', _entry('check_hooks_apply')),
         ),
     ),
     (
         'check-useless-excludes', (
             ('name', 'Check for useless excludes'),
-            ('files', f'^{re.escape(C.CONFIG_FILE)}$'),
+            ('files', f'^{re.escape(C.DEFAULT_CONFIG_FILE)}$'),
             ('entry', _entry('check_useless_excludes')),
         ),
     ),
