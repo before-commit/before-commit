@@ -11,6 +11,7 @@ on:
 jobs:
   before-commit:
     strategy:
+      fail-fast: true
       matrix:
         os:
           - ubuntu-latest
