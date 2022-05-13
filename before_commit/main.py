@@ -151,7 +151,8 @@ def _adjust_args_and_chdir(args: argparse.Namespace) -> None:
     toplevel = git.get_root()
     os.chdir(toplevel)
 
-    args.config = os.path.relpath(args.config)
+    if os.path.isfile(args.config):
+        args.config = os.path.relpath(args.config)
     if args.command in {'run', 'try-repo'}:
         args.files = [os.path.relpath(filename) for filename in args.files]
     if args.command == 'try-repo' and os.path.exists(args.repo):
