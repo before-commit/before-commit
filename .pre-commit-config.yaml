@@ -9,15 +9,11 @@ repos:
     -   id: double-quote-string-fixer
     -   id: name-tests-test
     -   id: requirements-txt-fixer
--   repo: https://github.com/asottile/setup-cfg-fmt
-    rev: v1.20.1
-    hooks:
-    -   id: setup-cfg-fmt
 -   repo: https://github.com/asottile/reorder_python_imports
     rev: v3.1.0
     hooks:
     -   id: reorder-python-imports
-        exclude: ^(before_commit/resources/|testing/resources/python3_hooks_repo/)
+        exclude: ^(before_commit/resources/|testing/resources/python3_hooks_repo/|before_commit/__init__.py)
         args: [--py37-plus, --add-import, 'from __future__ import annotations']
 -   repo: https://github.com/asottile/add-trailing-comma
     rev: v2.2.3
