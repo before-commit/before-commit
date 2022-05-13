@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import logging
 import os.path
 import shlex
+import shutil
 import sys
 import time
 from typing import MutableMapping
@@ -11,6 +13,7 @@ import pytest
 
 import before_commit.constants as C
 from before_commit import color
+from before_commit import main
 from before_commit.commands.install_uninstall import install
 from before_commit.commands.run import _compute_cols
 from before_commit.commands.run import _full_msg
@@ -25,9 +28,12 @@ from before_commit.util import make_executable
 from testing.auto_namedtuple import auto_namedtuple
 from testing.fixtures import add_config_to_repo
 from testing.fixtures import git_dir
+from testing.fixtures import make_config_from_repo
 from testing.fixtures import make_consuming_repo
+from testing.fixtures import make_repo
 from testing.fixtures import modify_config
 from testing.fixtures import read_config
+from testing.fixtures import remove_config_from_repo
 from testing.fixtures import sample_meta_config
 from testing.fixtures import write_config
 from testing.util import cmd_output_mocked_pre_commit_home
@@ -1149,3 +1155,131 @@ def test_pre_commit_env_variable_set(cap_out, store, repo_with_passing_hook):
         cap_out, store, repo_with_passing_hook, args, environ,
     )
     assert environ['PRE_COMMIT'] == '1'
+
+
+def test_pass_default_config_filename(
+    repo_with_passing_hook,
+    tempdir_factory,
+    mock_store_dir,
+):
+    with cwd(repo_with_passing_hook):
+        with mock.patch.object(main, 'run') as patch:
+            main.main(['run', '-c', C.DEFAULT_CONFIG_FILE])
+
+        assert patch.call_count == 1
+
+
+def test_pass_custom_config_filename(
+    repo_with_passing_hook,
+    tempdir_factory,
+    mock_store_dir,
+):
+    with cwd(repo_with_passing_hook):
+        path = make_repo(tempdir_factory, 'script_hooks_repo')
+        config = make_config_from_repo(path)
+        add_config_to_repo('.', config, '.my-config.yml')
+
+        with mock.patch.object(main, 'run') as patch:
+            main.main(['run', '-c', '.my-config.yml'])
+
+        assert patch.call_count == 1
+
+
+def test_duplicate_config(
+    repo_with_passing_hook,
+    tempdir_factory,
+    caplog,
+    mock_store_dir,
+):
+    with cwd(repo_with_passing_hook):
+        path = make_repo(tempdir_factory, 'script_hooks_repo')
+        config = make_config_from_repo(path)
+        add_config_to_repo('.', config, '.pre-commit-config.yml')
+
+        with mock.patch.object(main, 'run') as patch:
+            main.main(['run'])
+
+        assert patch.call_count == 1
+        assert caplog.record_tuples == [
+            (
+                'before_commit',
+                logging.WARNING,
+                'Duplicate config file \'.pre-commit-config.yml\'',
+            ),
+            (
+                'before_commit',
+                logging.WARNING,
+                f'Fallback to \'{C.DEFAULT_CONFIG_FILE}\'',
+            ),
+        ]
+
+
+def test_alternative_config(
+    repo_with_passing_hook,
+    tempdir_factory,
+    mock_store_dir,
+):
+    with cwd(repo_with_passing_hook):
+        path = make_repo(tempdir_factory, 'script_hooks_repo')
+        config = make_config_from_repo(path)
+        remove_config_from_repo('.')
+        add_config_to_repo('.', config, '.pre-commit-config.yml')
+
+        with mock.patch.object(main, 'run') as patch:
+            main.main(['run'])
+
+        assert patch.call_count == 1
+
+
+def test_duplicate_manifest(
+    tempdir_factory,
+    caplog,
+    mock_store_dir,
+):
+    path = make_repo(tempdir_factory, 'script_hooks_repo')
+    manifest_path = os.path.join(path, C.DEFAULT_MANIFEST_FILE)
+    shutil.copyfile(manifest_path, os.path.join(path, '.pre-commit-hooks.yml'))
+    cmd_output('git', 'add', '.pre-commit-hooks.yml', cwd=path)
+    git_commit(msg='add duplicate manifest', cwd=path)
+    config = make_config_from_repo(path)
+    git_path = git_dir(tempdir_factory)
+    repo_path = add_config_to_repo(git_path, config)
+
+    with cwd(repo_path):
+        with mock.patch.object(main, 'run') as patch:
+            main.main(['run'])
+
+        assert patch.call_count == 1
+        assert caplog.record_tuples == [
+            (
+                'before_commit',
+                logging.WARNING,
+                'Duplicate manifest file \'.pre-commit-hooks.yml\'',
+            ),
+            (
+                'before_commit',
+                logging.WARNING,
+                f'Fallback to \'{C.DEFAULT_MANIFEST_FILE}\'',
+            ),
+        ]
+
+
+def test_alternative_manifest(
+    tempdir_factory,
+    mock_store_dir,
+):
+    path = make_repo(tempdir_factory, 'script_hooks_repo')
+    manifest_path = os.path.join(path, C.DEFAULT_MANIFEST_FILE)
+    shutil.copyfile(manifest_path, os.path.join(path, '.pre-commit-hooks.yml'))
+    cmd_output('git', 'add', '.pre-commit-hooks.yml', cwd=path)
+    cmd_output('git', 'rm', '.pre-commit-hooks.yaml', cwd=path)
+    git_commit(msg='add duplicate manifest', cwd=path)
+    config = make_config_from_repo(path)
+    git_path = git_dir(tempdir_factory)
+    repo_path = add_config_to_repo(git_path, config)
+
+    with cwd(repo_path):
+        with mock.patch.object(main, 'run') as patch:
+            main.main(['run'])
+
+        assert patch.call_count == 1

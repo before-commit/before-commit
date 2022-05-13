@@ -7,6 +7,7 @@ import os.path
 import before_commit.constants as C
 from before_commit import git
 from before_commit import output
+from before_commit.clientlib import detect_manifest_file
 from before_commit.clientlib import load_manifest
 from before_commit.commands.run import run
 from before_commit.store import Store
@@ -57,9 +58,7 @@ def try_repo(args: argparse.Namespace) -> int:
             hooks = [{'id': args.hook}]
         else:
             repo_path = store.clone(repo, ref)
-            manifest = load_manifest(
-                os.path.join(repo_path, C.DEFAULT_MANIFEST_FILE),
-            )
+            manifest = load_manifest(detect_manifest_file(repo_path))
             manifest = sorted(manifest, key=lambda hook: hook['id'])
             hooks = [{'id': hook['id']} for hook in manifest]
 

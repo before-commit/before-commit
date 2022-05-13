@@ -44,8 +44,8 @@ COMMANDS_NO_GIT = {
 
 def _add_config_option(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
-        '-c', '--config', default=C.DEFAULT_CONFIG_FILE,
-        help='Path to alternate config file',
+        '-c', '--config', default='',
+        help='Path to alternate config file.  Empty fallbacks to defaults.',
     )
 
 
@@ -139,10 +139,31 @@ def _add_run_options(parser: argparse.ArgumentParser) -> None:
     )
 
 
+def _guess_config_file(args: argparse.Namespace) -> None:
+    if args.config != '':
+        return
+    default_ret = C.DEFAULT_CONFIG_FILE
+    found = 0
+    for file in C.CONFIG_FILES:
+        if os.path.exists(file):
+            args.config = file
+            found += 1
+            if found == 1:
+                default_ret = file
+            if found > 1:
+                logger.warning('Duplicate config file \'%s\'', file)
+    if found > 1:
+        logger.warning('Fallback to \'%s\'', C.DEFAULT_CONFIG_FILE)
+        args.config = default_ret
+    if not found:
+        args.config = default_ret
+
+
 def _adjust_args_and_chdir(args: argparse.Namespace) -> None:
     # `--config` was specified relative to the non-root working directory
     if os.path.exists(args.config):
         args.config = os.path.abspath(args.config)
+
     if args.command in {'run', 'try-repo'}:
         args.files = [os.path.abspath(filename) for filename in args.files]
     if args.command == 'try-repo' and os.path.exists(args.repo):
@@ -344,6 +365,8 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     with error_handler(), logging_handler(args.color):
         git.check_for_cygwin_mismatch()
+
+        _guess_config_file(args)
 
         if args.command not in COMMANDS_NO_GIT:
             _adjust_args_and_chdir(args)
