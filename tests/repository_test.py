@@ -256,6 +256,14 @@ def test_run_a_node_hook(tempdir_factory, store):
     )
 
 
+@xfailif_windows  # pragma: win32 no cover
+def test_run_a_node_hook_system_version(tempdir_factory, store):
+    returns_default = mock.Mock(return_value='system')
+    lang = languages['node']._replace(get_default_version=returns_default)
+    with mock.patch.dict(languages, node=lang):
+        test_run_a_node_hook(tempdir_factory, store)
+
+
 def test_run_a_node_hook_default_version(tempdir_factory, store):
     # make sure that this continues to work for platforms where node is not
     # installed at the system
