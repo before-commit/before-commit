@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import functools
 import logging
+import os.path
 import re
 import shlex
 import sys
@@ -440,3 +441,24 @@ def validate_config_main(argv: Sequence[str] | None = None) -> int:
         )
 
         return validate_config(args.filenames)
+
+
+def detect_manifest_file(path: str) -> str:
+    default_ret = os.path.join(path, C.DEFAULT_MANIFEST_FILE)
+    ret = default_ret
+
+    found = 0
+    for file in C.MANIFEST_FILES:
+        file_path = os.path.join(path, file)
+        if os.path.exists(file_path):
+            ret = file_path
+            found += 1
+            if found == 1:
+                default_ret = file_path
+            if found > 1:
+                logger.warning('Duplicate manifest file \'%s\'', file)
+    if found > 1:
+        logger.warning('Fallback to \'%s\'', os.path.basename(default_ret))
+        ret = default_ret
+
+    return ret

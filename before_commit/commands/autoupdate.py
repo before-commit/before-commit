@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-import os.path
 import re
 from typing import Any
 from typing import NamedTuple
 from typing import Sequence
 
-import before_commit.constants as C
 from before_commit import git
 from before_commit import output
+from before_commit.clientlib import detect_manifest_file
 from before_commit.clientlib import InvalidManifestError
 from before_commit.clientlib import load_config
 from before_commit.clientlib import load_manifest
@@ -83,7 +82,7 @@ def _check_hooks_still_exist_at_rev(
 ) -> None:
     try:
         path = store.clone(repo_config['repo'], info.rev)
-        manifest = load_manifest(os.path.join(path, C.DEFAULT_MANIFEST_FILE))
+        manifest = load_manifest(detect_manifest_file(path))
     except InvalidManifestError as e:
         raise RepositoryCannotBeUpdatedError(str(e))
 

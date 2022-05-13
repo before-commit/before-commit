@@ -7,6 +7,7 @@ import shutil
 import before_commit.constants as C
 from before_commit import git
 from before_commit.clientlib import CONFIG_SCHEMA
+from before_commit.clientlib import detect_manifest_file
 from before_commit.clientlib import load_manifest
 from before_commit.config import apply_defaults
 from before_commit.config import validate
@@ -54,7 +55,7 @@ def modify_manifest(path, commit=True):
     """Modify the manifest yielded by this context to write to
     .pre-commit-hooks.yaml.
     """
-    manifest_path = os.path.join(path, C.DEFAULT_MANIFEST_FILE)
+    manifest_path = detect_manifest_file(path)
     with open(manifest_path) as f:
         manifest = yaml_load(f.read())
     yield manifest
@@ -96,7 +97,7 @@ def sample_meta_config():
 
 
 def make_config_from_repo(repo_path, rev=None, hooks=None, check=True):
-    manifest = load_manifest(os.path.join(repo_path, C.DEFAULT_MANIFEST_FILE))
+    manifest = load_manifest(detect_manifest_file(repo_path))
     config = {
         'repo': f'file://{repo_path}',
         'rev': rev or git.head_rev(repo_path),

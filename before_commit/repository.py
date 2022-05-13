@@ -7,6 +7,7 @@ from typing import Any
 from typing import Sequence
 
 import before_commit.constants as C
+from before_commit.clientlib import detect_manifest_file
 from before_commit.clientlib import load_manifest
 from before_commit.clientlib import LOCAL
 from before_commit.clientlib import META
@@ -168,10 +169,7 @@ def _cloned_repository_hooks(
         root_config: dict[str, Any],
 ) -> tuple[Hook, ...]:
     repo, rev = repo_config['repo'], repo_config['rev']
-    manifest_path = os.path.join(
-        store.clone(repo, rev),
-        C.DEFAULT_MANIFEST_FILE,
-    )
+    manifest_path = detect_manifest_file(store.clone(repo, rev))
     by_id = {hook['id']: hook for hook in load_manifest(manifest_path)}
 
     for hook in repo_config['hooks']:

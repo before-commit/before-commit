@@ -5,6 +5,7 @@ from typing import Any
 
 import before_commit.constants as C
 from before_commit import output
+from before_commit.clientlib import detect_manifest_file
 from before_commit.clientlib import InvalidConfigError
 from before_commit.clientlib import InvalidManifestError
 from before_commit.clientlib import load_config
@@ -36,9 +37,7 @@ def _mark_used_repos(
             return
 
         try:
-            manifest = load_manifest(
-                os.path.join(path, C.DEFAULT_MANIFEST_FILE),
-            )
+            manifest = load_manifest(detect_manifest_file(path))
         except InvalidManifestError:
             return
         else:
