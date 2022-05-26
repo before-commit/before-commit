@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace dotnet_hooks_sln_repo
 {
