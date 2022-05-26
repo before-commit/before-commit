@@ -74,6 +74,7 @@ jobs:
       - if: "!startsWith(matrix.os, 'windows')"
         uses: conda-incubator/setup-miniconda@v2.1.1
         with:
+          miniconda-version: "latest"
           auto-update-conda: true
           python-version: ${{ matrix.py }}
           auto-activate-base: true
