@@ -964,9 +964,15 @@ def test_prepare_commit_msg_legacy(
 
 def test_pre_merge_commit_integration(tempdir_factory, store):
     output_pattern = re_assert.Matches(
-        r'^\[INFO\] Initializing environment for .+\n'
+        r'^('
+        r"Merge made by the '(ort|recursive)' strategy.\n"
+        r'\[INFO\] Initializing environment for .+\n'
+        r'Bash hook\.+Passed\n'
+        r'|'
+        r'\[INFO\] Initializing environment for .+\n'
         r'Bash hook\.+Passed\n'
         r"Merge made by the '(ort|recursive)' strategy.\n"
+        r')'
         r' foo \| 0\n'
         r' 1 file changed, 0 insertions\(\+\), 0 deletions\(-\)\n'
         r' create mode 100644 foo\n$',
