@@ -129,9 +129,9 @@ jobs:
       - uses: actions/cache@v3.0.2
         with:
           path: ${{ env.PRE_COMMIT_HOME }}
-          key: ${{ runner.os }}-pre-commit-${{ hashFiles('**/.pre-commit-config.yaml') }}
+          key: ${{ matrix.os }}-${{ matrix.py }}-pre-commit-${{ hashFiles('**/.pre-commit-config.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pre-commit-
+            ${{ matrix.os }}-${{ matrix.py }}-pre-commit-
 
       - name: Run test suite via tox
         run: |
