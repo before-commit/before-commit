@@ -14,7 +14,7 @@ env:
   PRE_COMMIT_HOME: ${{ github.workspace }}/.pre-commit-cache
 
 jobs:
-  pre-commit:
+  before-commit:
     env:
       PY_COLORS: 1
       TOX_PARALLEL_NO_SPINNER: 1
@@ -41,8 +41,8 @@ jobs:
 
       - name: Run test suite via tox
         run: |
-          tox -vv --notest -e pre-commit
-          tox -e pre-commit --skip-pkg-install
+          tox -vv --notest -e before-commit
+          tox -e before-commit --skip-pkg-install
 
   pytest:
     env:
