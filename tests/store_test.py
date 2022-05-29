@@ -73,8 +73,8 @@ def test_store_init(store):
     with open(os.path.join(store.directory, 'README')) as readme_file:
         readme_contents = readme_file.read()
         for text_line in (
-            'This directory is maintained by the pre-commit project.',
-            'Learn more: https://github.com/pre-commit/pre-commit',
+            'This directory is maintained by the before-commit project.',
+            'Learn more: https://github.com/before-commit/before-commit',
         ):
             assert text_line in readme_contents
 

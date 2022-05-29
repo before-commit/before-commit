@@ -53,8 +53,10 @@ class Store:
             os.makedirs(self.directory, exist_ok=True)
             with open(os.path.join(self.directory, 'README'), 'w') as f:
                 f.write(
-                    'This directory is maintained by the pre-commit project.\n'
-                    'Learn more: https://github.com/pre-commit/pre-commit\n',
+                    'This directory is maintained by the before-commit '
+                    'project.\n'
+                    'Learn more: '
+                    'https://github.com/before-commit/before-commit\n',
                 )
 
         if os.path.exists(self.db_path):
