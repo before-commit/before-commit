@@ -27,15 +27,23 @@ def test_our_session_fixture_works():
 
 
 def test_get_default_directory_defaults_to_home():
-    # Not we use the module level one which is not mocked
-    ret = _get_default_directory()
+    with mock.patch.dict(
+        os.environ, {
+            'PRE_COMMIT_HOME': '',
+            'XDG_CACHE_HOME': '',
+        },
+    ):
+        ret = _get_default_directory()
     expected = os.path.realpath(os.path.expanduser('~/.cache/pre-commit'))
     assert ret == expected
 
 
 def test_adheres_to_xdg_specification():
     with mock.patch.dict(
-        os.environ, {'XDG_CACHE_HOME': '/tmp/fakehome'},
+        os.environ, {
+            'PRE_COMMIT_HOME': '',
+            'XDG_CACHE_HOME': '/tmp/fakehome',
+        },
     ):
         ret = _get_default_directory()
     expected = os.path.realpath('/tmp/fakehome/pre-commit')
