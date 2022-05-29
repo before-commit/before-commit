@@ -11,7 +11,7 @@ on:
 
 env:
   SKIP: no-commit-to-branch
-  PRE_COMMIT_HOME: ${{ github.workspace }}/.pre-commit-cache
+  PRE_COMMIT_HOME: ${{ github.workspace }}/.before-commit-cache
 
 jobs:
   before-commit:
@@ -35,9 +35,9 @@ jobs:
       - uses: actions/cache@v3.0.2
         with:
           path: ${{ env.PRE_COMMIT_HOME }}
-          key: ${{ runner.os }}-pre-commit-${{ hashFiles('**/.pre-commit-config.yaml') }}
+          key: ${{ runner.os }}-before-commit-${{ hashFiles('**/.pre-commit-config.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pre-commit-
+            ${{ runner.os }}-before-commit-
 
       - name: Run test suite via tox
         run: |
