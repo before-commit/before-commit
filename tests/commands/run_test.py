@@ -597,6 +597,8 @@ def test_compute_cols(hooks, expected):
         ({'SKIP': 'foo'}, {'foo'}),
         ({'SKIP': 'foo,bar'}, {'foo', 'bar'}),
         ({'SKIP': ' foo , bar'}, {'foo', 'bar'}),
+        ({'SKIP': 'foo,bar', 'BEFORE_COMMIT_SKIP': ''}, set()),
+        ({'BEFORE_COMMIT_SKIP': ',foo'}, {'foo'}),
     ),
 )
 def test_get_skips(environ, expected_output):

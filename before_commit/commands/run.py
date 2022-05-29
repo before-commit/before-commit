@@ -127,7 +127,11 @@ class Classifier:
 
 
 def _get_skips(environ: MutableMapping[str, str]) -> set[str]:
-    skips = environ.get('SKIP', '')
+    specific_skip_var = environ.get('BEFORE_COMMIT_SKIP')
+    if specific_skip_var is None:
+        skips = environ.get('SKIP', '')
+    else:
+        skips = specific_skip_var
     return {skip.strip() for skip in skips.split(',') if skip.strip()}
 
 
