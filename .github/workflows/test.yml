@@ -10,6 +10,7 @@ on:
   workflow_dispatch:
 
 env:
+  SKIP: no-commit-to-branch
   PRE_COMMIT_HOME: ${{ github.workspace }}/.pre-commit-cache
 
 jobs:
