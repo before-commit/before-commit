@@ -50,9 +50,16 @@ def test_adheres_to_xdg_specification():
     assert ret == expected
 
 
-def test_uses_environment_variable_when_present():
+@pytest.mark.parametrize(
+    'env_dict',
+    (
+        {'PRE_COMMIT_HOME': '', 'BEFORE_COMMIT_HOME': '/tmp/pre_commit_home'},
+        {'BEFORE_COMMIT_HOME': '', 'PRE_COMMIT_HOME': '/tmp/pre_commit_home'},
+    ),
+)
+def test_uses_environment_variable_when_present(env_dict):
     with mock.patch.dict(
-        os.environ, {'PRE_COMMIT_HOME': '/tmp/pre_commit_home'},
+        os.environ, env_dict,
     ):
         ret = _get_default_directory()
     expected = os.path.realpath('/tmp/pre_commit_home')
