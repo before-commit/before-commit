@@ -11,11 +11,15 @@ DEFAULT_CONFIG_FILE = '.pre-commit-config.yaml'
 CONFIG_FILES = [
     '.pre-commit-config.yaml',
     '.pre-commit-config.yml',
+    '.before-commit-config.yaml',
+    '.before-commit-config.yml',
 ]
 DEFAULT_MANIFEST_FILE = '.pre-commit-hooks.yaml'
 MANIFEST_FILES = [
     '.pre-commit-hooks.yaml',
     '.pre-commit-hooks.yml',
+    '.before-commit-hooks.yaml',
+    '.before-commit-hooks.yml',
 ]
 
 # Bump when installation changes in a backwards / forwards incompatible way
