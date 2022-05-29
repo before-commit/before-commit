@@ -13,6 +13,10 @@ env:
   SKIP: no-commit-to-branch
   PRE_COMMIT_HOME: ${{ github.workspace }}/.before-commit-cache
 
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   before-commit:
     env:
