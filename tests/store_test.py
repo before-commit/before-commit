@@ -34,7 +34,7 @@ def test_get_default_directory_defaults_to_home():
         },
     ):
         ret = _get_default_directory()
-    expected = os.path.realpath(os.path.expanduser('~/.cache/pre-commit'))
+    expected = os.path.realpath(os.path.expanduser('~/.cache/before-commit'))
     assert ret == expected
 
 
@@ -46,7 +46,7 @@ def test_adheres_to_xdg_specification():
         },
     ):
         ret = _get_default_directory()
-    expected = os.path.realpath('/tmp/fakehome/pre-commit')
+    expected = os.path.realpath('/tmp/fakehome/before-commit')
     assert ret == expected
 
 

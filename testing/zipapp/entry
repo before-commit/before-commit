@@ -10,7 +10,7 @@ import zipfile
 
 from before_commit.file_lock import lock
 
-CACHE_DIR = os.path.expanduser('~/.cache/pre-commit-zipapp')
+CACHE_DIR = os.path.expanduser('~/.cache/before-commit-zipapp')
 
 
 def _make_executable(filename: str) -> None:
