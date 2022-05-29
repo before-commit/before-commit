@@ -65,6 +65,7 @@ jobs:
           - '3.8'
           - '3.9'
           - '3.10'
+        clean: ['no']
         exclude:
           - {os: ubuntu-18.04, py: '3.8'}
           - {os: ubuntu-18.04, py: '3.9'}
@@ -72,6 +73,8 @@ jobs:
           - {os: macos-11, py: '3.9'}
           - {os: windows-2019, py: '3.8'}
           - {os: windows-2019, py: '3.9'}
+        include:
+          - {os: ubuntu-20.04, py: '3.10', clean: 'yes'}
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -142,10 +145,17 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-${{ matrix.py }}-pre-commit-
 
-      - name: Run test suite via tox
+      - if: matrix.clean == 'no'
+        name: Run test suite via tox
         run: |
           tox -vv --notest -e ${{env.BASE}}
           tox -e ${{env.BASE}} --skip-pkg-install
+
+      - if: matrix.clean == 'yes'
+        name: Run clean test suite via tox
+        run: |
+          PRE_COMMIT_HOME= tox -vv --notest -e ${{env.BASE}}
+          PRE_COMMIT_HOME= tox -e ${{env.BASE}} --skip-pkg-install
 
       - name: Rename coverage report file
         if: ${{ always() }}
