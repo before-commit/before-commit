@@ -46,12 +46,12 @@ jobs:
 
   pytest:
     env:
-      PYTEST_ADDOPTS: "--showlocals -vv --durations=10"
+      PYTEST_ADDOPTS: "--showlocals -vv --durations=10 -x"
       PY_COLORS: 1
       TOX_PARALLEL_NO_SPINNER: 1
       GO111MODULE: auto
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         os:
           - ubuntu-18.04
