@@ -154,6 +154,9 @@ def _add_run_options(parser: argparse.ArgumentParser) -> None:
 
 
 def _guess_config_file(args: argparse.Namespace) -> None:
+    if not hasattr(args, 'config'):
+        return
+
     if args.config != '':
         return
     default_ret = C.DEFAULT_CONFIG_FILE
@@ -174,9 +177,10 @@ def _guess_config_file(args: argparse.Namespace) -> None:
 
 
 def _adjust_args_and_chdir(args: argparse.Namespace) -> None:
-    # `--config` was specified relative to the non-root working directory
-    if os.path.exists(args.config):
-        args.config = os.path.abspath(args.config)
+    if hasattr(args, 'config'):
+        # `--config` was specified relative to the non-root working directory
+        if os.path.exists(args.config):
+            args.config = os.path.abspath(args.config)
 
     if args.command in {'run', 'try-repo'}:
         args.files = [os.path.abspath(filename) for filename in args.files]
