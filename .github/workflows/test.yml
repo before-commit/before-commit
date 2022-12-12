@@ -33,7 +33,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3.0.2
       - name: Setup python for tox
-        uses: actions/setup-python@v4.2.0
+        uses: actions/setup-python@v4.3.1
         with:
           python-version: '3.x'
       - name: Install tox
@@ -119,7 +119,7 @@ jobs:
           rust-version: stable
 
       - name: Setup python for test ${{ matrix.py }}
-        uses: actions/setup-python@v4.2.0
+        uses: actions/setup-python@v4.3.1
         with:
           python-version: ${{ matrix.py }}
       - name: Pick environment to run
@@ -138,7 +138,7 @@ jobs:
         shell: python
 
       - name: Setup python for tox
-        uses: actions/setup-python@v4.2.0
+        uses: actions/setup-python@v4.3.1
         with:
           python-version: 3.9
       - name: Install tox
