@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3.0.2
       - name: Setup python
-        uses: actions/setup-python@v4.2.0
+        uses: actions/setup-python@v4.4.0
         with:
           python-version: '3.x'
       - name: Install mypy
@@ -46,7 +46,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3.0.2
       - name: Setup python
-        uses: actions/setup-python@v4.2.0
+        uses: actions/setup-python@v4.4.0
         with:
           python-version: '3.x'
       - name: Install flit
