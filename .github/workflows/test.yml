@@ -31,7 +31,7 @@ jobs:
           - windows-latest
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3.0.2
+      - uses: actions/checkout@v3.3.0
       - name: Setup python for tox
         uses: actions/setup-python@v4.5.0
         with:
@@ -84,7 +84,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3.0.2
+      - uses: actions/checkout@v3.3.0
 
       # Dependencies of the testsuite
       - uses: actions/setup-node@v3.4.1
