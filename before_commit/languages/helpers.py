@@ -5,9 +5,9 @@ import os
 import random
 import re
 from typing import Any
+from typing import NoReturn
 from typing import overload
 from typing import Sequence
-from typing import TYPE_CHECKING
 
 import before_commit.constants as C
 from before_commit import parse_shebang
@@ -15,9 +15,6 @@ from before_commit.hook import Hook
 from before_commit.prefix import Prefix
 from before_commit.util import cmd_output_b
 from before_commit.xargs import xargs
-
-if TYPE_CHECKING:
-    from typing import NoReturn
 
 FIXED_RANDOM_SEED = 1542676187
 

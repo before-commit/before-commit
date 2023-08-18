@@ -46,9 +46,11 @@ def test_error_handler_fatal_error(mocked_log_and_exit):
         r'  File ".+before_commit.error_handler.py", line \d+, '
         r'in error_handler\n'
         r'    yield\n'
+        r'(    \^\^\^\^\^\n)?'
         r'  File ".+tests.error_handler_test.py", line \d+, '
         r'in test_error_handler_fatal_error\n'
         r'    raise exc\n'
+        r'(    \^\^\^\^\^\^\^\^\^\n)?'
         r'(before_commit\.errors\.)?FatalError: just a test\n',
     )
     pattern.assert_matches(mocked_log_and_exit.call_args[0][3])
@@ -71,9 +73,11 @@ def test_error_handler_uncaught_error(mocked_log_and_exit):
         r'  File ".+before_commit.error_handler.py", line \d+, in '
         r'error_handler\n'
         r'    yield\n'
+        r'(    \^\^\^\^\^\n)?'
         r'  File ".+tests.error_handler_test.py", line \d+, '
         r'in test_error_handler_uncaught_error\n'
         r'    raise exc\n'
+        r'(    \^\^\^\^\^\^\^\^\^\n)?'
         r'ValueError: another test\n',
     )
     pattern.assert_matches(mocked_log_and_exit.call_args[0][3])
@@ -96,9 +100,11 @@ def test_error_handler_keyboardinterrupt(mocked_log_and_exit):
         r'  File ".+before_commit.error_handler.py", line \d+, '
         r'in error_handler\n'
         r'    yield\n'
+        r'(    \^\^\^\^\^\n)?'
         r'  File ".+tests.error_handler_test.py", line \d+, '
         r'in test_error_handler_keyboardinterrupt\n'
         r'    raise exc\n'
+        r'(    \^\^\^\^\^\^\^\^\^\n)?'
         r'KeyboardInterrupt\n',
     )
     pattern.assert_matches(mocked_log_and_exit.call_args[0][3])
